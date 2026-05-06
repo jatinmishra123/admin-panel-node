@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Header / Sidebar / Footer placeholders -->
+  <div id="header"></div>
+  <div id="sidebarWrap"></div>
+
+  <main class="main-content">
+    <section class="topbar">
+      <h1>Welcome to Dashboard 👋</h1>
+      <p>Manage users, products, categories, orders and analytics.</p>
+    </section>
+
+    <!-- Summary cards -->
+    <section class="cards">
+      <article class="card">
+        <h2>1,250+</h2>
+        <p>Total Users</p>
+      </article>
+      <article class="card">
+        <h2>320</h2>
+        <p>Products</p>
+      </article>
+      <article class="card">
+        <h2>28</h2>
+        <p>Categories</p>
+      </article>
+      <article class="card">
+        <h2>96</h2>
+        <p>Orders Today</p>
+      </article>
+    </section>
+
+    <!-- Categories/Subcategories -->
+    <section class="dashboard-grid">
+      <article class="dashboard-box">
+        <h3>Categories</h3>
+        <ul class="styled-list">
+          <li>Electronics</li>
+          <li>Fashion</li>
+          <li>Home Decor</li>
+          <li>Groceries</li>
+          <li>Beauty</li>
+        </ul>
+      </article>
+
+      <article class="dashboard-box">
+        <h3>Subcategories</h3>
+        <ul class="styled-list">
+          <li>Mobiles</li>
+          <li>Laptops</li>
+          <li>Men Clothing</li>
+          <li>Kitchen Tools</li>
+          <li>Skin Care</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Tables -->
+    <section class="dashboard-grid">
+      <article class="dashboard-box">
+        <h3>Recent Users</h3>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Rishabh</td><td>Admin</td></tr>
+              <tr><td>Aman</td><td>Manager</td></tr>
+              <tr><td>Priya</td><td>User</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="dashboard-box">
+        <h3>Recent Orders</h3>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>#1001</td><td><span class="badge done">Completed</span></td></tr>
+              <tr><td>#1002</td><td><span class="badge pending">Pending</span></td></tr>
+              <tr><td>#1003</td><td><span class="badge shipped">Shipped</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- Charts -->
+    <section class="dashboard-grid">
+      <article class="dashboard-box">
+        <h3>Product Distribution</h3>
+        <canvas id="pieChart" height="220"></canvas>
+      </article>
+
+      <article class="dashboard-box">
+        <h3>Monthly Orders</h3>
+        <canvas id="barChart" height="220"></canvas>
+      </article>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    function loadPartial(id, file) {
+      return fetch(file)
+        .then((res) => res.text())
+        .then((html) => {
+          document.getElementById(id).innerHTML = html;
+        });
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+    }
+
+    function initCharts() {
+      const pieEl = document.getElementById("pieChart");
+      const barEl = document.getElementById("barChart");
+      if (!pieEl || !barEl) return;
+
+      new Chart(pieEl, {
+        type: "pie",
+        data: {
+          labels: ["Electronics", "Fashion", "Home Decor", "Beauty"],
+          datasets: [{
+            data: [35, 25, 20, 20],
+            backgroundColor: ["#667eea", "#764ba2", "#36A2EB", "#FF6384"]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      new Chart(barEl, {
+        type: "bar",
+        data: {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+          datasets: [{
+            label: "Orders",
+            data: [120, 190, 300, 250, 220, 310],
+            backgroundColor: "#667eea",
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    Promise.all([
+      loadPartial("header", "header.html"),
+      loadPartial("sidebarWrap", "sidebar.html"),
+      loadPartial("footer", "footer.html")
+    ]).finally(() => {
+      // If you have initSidebarToggle in dashboard.js, call it here too.
+      // if (typeof initSidebarToggle === "function") initSidebarToggle();
+      initCharts();
+    });
+  </script>
+  <style>
+    /* ================= DASHBOARD BOX FIX ================= */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+    margin-top: 28px;
+}
+
+.dashboard-box {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    border: 1px solid #eef2ff;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.dashboard-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 38px rgba(102,126,234,0.12);
+}
+
+.dashboard-box h3 {
+    font-size: 20px;
+    margin-bottom: 18px;
+    color: #333;
+    font-weight: 700;
+    border-bottom: 2px solid #f3f4f6;
+    padding-bottom: 10px;
+}
+
+/* ================= CHART FIX ================= */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 320px;
+    height: 320px;
+    margin: 0 auto;
+}
+
+/* Pie chart specifically */
+#pieChart {
+    max-width: 320px !important;
+    max-height: 320px !important;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Bar chart */
+#barChart {
+    width: 100% !important;
+    max-height: 320px !important;
+}
+
+/* Canvas safety */
+canvas {
+    display: block;
+}
+
+/* ================= TABLE ================= */
+.table-wrap {
+    overflow-x: auto;
+    border-radius: 16px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 280px;
+}
+
+.admin-table th {
+    background: #667eea;
+    color: white;
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.admin-table td {
+    padding: 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #444;
+}
+
+.admin-table tr:hover {
+    background: #f8faff;
+}
+
+/* ================= BADGES ================= */
+.badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge.done {
+    background: rgba(34,197,94,0.15);
+    color: #16a34a;
+}
+
+.badge.pending {
+    background: rgba(245,158,11,0.15);
+    color: #d97706;
+}
+
+.badge.shipped {
+    background: rgba(59,130,246,0.15);
+    color: #2563eb;
+}
+
+/* ================= CATEGORY LIST ================= */
+.styled-list {
+    list-style: none;
+    padding: 0;
+}
+
+.styled-list li {
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    background: #f8faff;
+    transition: 0.3s;
+    font-weight: 500;
+    color: #444;
+}
+
+.styled-list li:hover {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    transform: translateX(4px);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-box {
+        padding: 20px;
+    }
+
+    .chart-container {
+        max-width: 260px;
+        height: 260px;
+    }
+
+    #pieChart {
+        max-width: 260px !important;
+        max-height: 260px !important;
+    }
+
+    #barChart {
+        max-height: 260px !important;
+    }
+}
+  </style>
+</body>
+</html>
