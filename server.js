@@ -17,8 +17,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static files from inc folder
-app.use(express.static("inc"));
-
+// Example:
+// inc/assets/css/style.css
+// inc/html/profile.html
+app.use("/assets", express.static(path.join(__dirname, "inc/assets")));
+app.use(express.static(path.join(__dirname, "inc/html")));
 // ================= MONGODB =================
 const client = new MongoClient(MONGO_URL);
 let db;
@@ -26,12 +29,13 @@ let db;
 async function connectDB() {
     try {
         await client.connect();
-        console.log("MongoDB Connected Successfully");
         db = client.db(DB_NAME);
+        console.log("MongoDB Connected Successfully");
     } catch (error) {
         console.log("MongoDB Connection Error:", error);
     }
 }
+
 connectDB();
 
 // ================= JWT VERIFY MIDDLEWARE =================
@@ -39,6 +43,7 @@ function verifyToken(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
 
+        // Check token exists
         if (!authHeader) {
             return res.status(401).json({
                 success: false,
@@ -46,6 +51,7 @@ function verifyToken(req, res, next) {
             });
         }
 
+        // Format: Bearer token_here
         const token = authHeader.split(" ")[1];
 
         if (!token) {
@@ -55,8 +61,10 @@ function verifyToken(req, res, next) {
             });
         }
 
+        // Verify token
         const verified = jwt.verify(token, JWT_SECRET);
 
+        // Save user data
         req.user = verified;
 
         next();
@@ -70,29 +78,30 @@ function verifyToken(req, res, next) {
 }
 
 // ================= PAGE ROUTES =================
-app.get("/products", (req, res) => res.sendFile(path.join(__dirname, "inc", "products.html")));
-app.get("/category", (req, res) => res.sendFile(path.join(__dirname, "inc", "category.html")));
-app.get("/orders", (req, res) => res.sendFile(path.join(__dirname, "inc", "orders.html")));
-app.get("/customers", (req, res) => res.sendFile(path.join(__dirname, "inc", "customers.html")));
-app.get("/inventory", (req, res) => res.sendFile(path.join(__dirname, "inc", "inventory.html")));
-app.get("/coupons", (req, res) => res.sendFile(path.join(__dirname, "inc", "coupons.html")));
-app.get("/reviews", (req, res) => res.sendFile(path.join(__dirname, "inc", "reviews.html")));
-app.get("/reports", (req, res) => res.sendFile(path.join(__dirname, "inc", "reports.html")));
-app.get("/settings", (req, res) => res.sendFile(path.join(__dirname, "inc", "settings.html")));
-app.get("/profile", (req, res) => res.sendFile(path.join(__dirname, "inc", "profile.html")));
-// Login Page
+
+// LOGIN PAGE
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "inc", "login.html"));
+    res.sendFile(path.join(__dirname, "inc", "html", "login.html"));
 });
 
-// Register Page
+// REGISTER PAGE
 app.get("/register", (req, res) => {
-    res.sendFile(path.join(__dirname, "inc", "register.html"));
+    res.sendFile(path.join(__dirname, "inc", "html", "register.html"));
 });
 
-// Dashboard Page
-app.get("/dashboard", (req, res) => {
-    res.sendFile(path.join(__dirname, "inc", "dashboard.html"));
+// index PAGE
+app.get("/index", (req, res) => {
+    res.sendFile(path.join(__dirname, "inc", "html", "index.html"));
+});
+
+// PROFILE PAGE
+app.get("/profile", (req, res) => {
+    res.sendFile(path.join(__dirname, "inc", "html", "profile.html"));
+});
+
+// HEADER INCLUDE FILE
+app.get("/header", (req, res) => {
+    res.sendFile(path.join(__dirname, "inc", "html", "header.html"));
 });
 
 // ================= AUTH ROUTES =================
@@ -110,7 +119,7 @@ app.post("/register", async (req, res) => {
             });
         }
 
-        // Check existing user
+        // Existing user check
         const existingUser = await db.collection("auth_users").findOne({ email });
 
         if (existingUser) {
@@ -120,7 +129,7 @@ app.post("/register", async (req, res) => {
             });
         }
 
-        // Hash password
+        // Password hash
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Save user
@@ -169,7 +178,7 @@ app.post("/login", async (req, res) => {
             });
         }
 
-        // Compare password
+        // Password compare
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
@@ -179,7 +188,7 @@ app.post("/login", async (req, res) => {
             });
         }
 
-        // Generate token
+        // Generate JWT
         const token = jwt.sign(
             {
                 userId: user._id,
@@ -207,15 +216,28 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// ================= PROTECTED ROUTE =================
+// ================= PROTECTED PROFILE API =================
 
-// Get Profile
+// GET PROFILE
 app.get("/api/profile", verifyToken, async (req, res) => {
     try {
         const user = await db.collection("auth_users").findOne(
-            { _id: new ObjectId(req.user.userId) },
-            { projection: { password: 0 } }
+            {
+                _id: new ObjectId(req.user.userId)
+            },
+            {
+                projection: {
+                    password: 0
+                }
+            }
         );
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found."
+            });
+        }
 
         return res.status(200).json({
             success: true,
