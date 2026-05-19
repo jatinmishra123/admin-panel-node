@@ -1,43 +1,21 @@
 const express = require("express");
-const { MongoClient, ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const path = require("path");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const { connectDB, getDB } = require("./config/db");
 const app = express();
 
 // ================= CONFIG =================
 const PORT = 3000;
-const MONGO_URL = "mongodb://127.0.0.1:27017";
-const DB_NAME = "cruddb";
 const JWT_SECRET = "your_super_secure_secret_key_change_this";
 
 // ================= MIDDLEWARE =================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files from inc folder
-// Example:
-// inc/assets/css/style.css
-// inc/html/profile.html
 app.use("/assets", express.static(path.join(__dirname, "inc/assets")));
 app.use(express.static(path.join(__dirname, "inc/html")));
-// ================= MONGODB =================
-const client = new MongoClient(MONGO_URL);
-let db;
-
-async function connectDB() {
-    try {
-        await client.connect();
-        db = client.db(DB_NAME);
-        console.log("MongoDB Connected Successfully");
-    } catch (error) {
-        console.log("MongoDB Connection Error:", error);
-    }
-}
-
-connectDB();
-
 // ================= JWT VERIFY MIDDLEWARE =================
 function verifyToken(req, res, next) {
     try {
@@ -103,11 +81,48 @@ app.get("/profile", (req, res) => {
 app.get("/header", (req, res) => {
     res.sendFile(path.join(__dirname, "inc", "html", "header.html"));
 });
-
+// user page route
+app.get("/users",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html", "users.html"));
+});
+// charts page route 
+app.get("/charts",(req,res)=>{
+    res.sendFile(path.join(__dirname,"inc", "html", "charts.html"));
+});
+// charts routes 
+app.get("/add-user",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html", "add-user.html"));
+});
+// tables route 
+app.get("/tables",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html", "tables.html"));
+});
+app.get("/forms",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html","forms.html" ));
+});
+app.get("/settings",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc","html","settings.html"));
+});
+app.get("/blank",(req,res)=>{
+    res.sendFile(path.join(__dirname,"inc", "html", "blank.html"));
+})
+app.get("/category",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc" ,"html","category.html"));
+});
+app.get("/subcategory",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc","html", "subcategory.html"));
+});
+app.get("/product",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html","product.html"));
+});
+app.get("/orders",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html","orders.html"));
+});
 // ================= AUTH ROUTES =================
 
 // REGISTER USER
 app.post("/register", async (req, res) => {
+    const db= getDB();
     try {
         const { name, email, password } = req.body;
 
@@ -157,6 +172,7 @@ app.post("/register", async (req, res) => {
 
 // LOGIN USER
 app.post("/login", async (req, res) => {
+    const db = getDB();
     try {
         const { email, password } = req.body;
 
@@ -220,6 +236,7 @@ app.post("/login", async (req, res) => {
 
 // GET PROFILE
 app.get("/api/profile", verifyToken, async (req, res) => {
+    const db = getDB();
     try {
         const user = await db.collection("auth_users").findOne(
             {
@@ -252,7 +269,7 @@ app.get("/api/profile", verifyToken, async (req, res) => {
         });
     }
 });
-
+connectDB();
 // ================= SERVER =================
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
