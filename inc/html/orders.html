@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="admin panel professional admin dashboard template">
-  <title>Add User | admin panel</title>
+  <title>Orders | admin panel</title>
 
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="../assets/vendors/bootstrap-icons/bootstrap-icons.css">
@@ -14,193 +14,311 @@
   <div class="admin-shell">
     <div class="sidebar-backdrop" data-sidebar-close></div>
 
-    <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
-      <div class="sidebar-header">
-             <a class="brand-mark" href="index.html" aria-label="admin panel dashboard">
-    <img src="../assets/images/brand/logo/logo.png" alt="Admin Panel Logo">
-              <span class="brand-copy">
-            <span class="brand-title">Admin Panel</span>
-            <span class="brand-subtitle">jatin mishra </span>
-          </span>
-</a>
-      </div>
-
-      <div id="header"></div>
-
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-        <strong>jatin mishra</strong>
-        <small>Active Workspace</small>
-      </div>
-
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
-    </aside>
+    <div id="sidebarSlot"></div>
 
     <div class="admin-main">
-      <nav class="navbar admin-navbar navbar-expand bg-white">
-        <div class="container-fluid px-3 px-lg-4">
-          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" aria-label="Toggle sidebar">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+      <div id="navbarSlot"></div>
 
-          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Search users, orders, reports" aria-label="Search">
-          </form>
-
-          <div class="navbar-actions ms-auto">
-            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
-              <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
-            </button>
-            <div class="dropdown">
-              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                <span class="notification-dot"></span>
-                <i class="bi bi-bell" aria-hidden="true"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end notification-menu">
-                <div class="dropdown-header fw-bold text-body">Notifications</div>
-                <a class="dropdown-item" href="users.html">
-                  <span class="notification-title">New user registered</span>
-                  <span class="notification-time">4 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="charts.html">
-                  <span class="notification-title">Revenue target reached</span>
-                  <span class="notification-time">32 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="settings.html">
-                  <span class="notification-title">Security review completed</span>
-                  <span class="notification-time">1 hour ago</span>
-                </a>
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span>
+              <div>
+                <p class="eyebrow mb-1">Management</p>
+                <h1 class="h3 mb-1">Orders</h1>
+                <p class="text-muted mb-0">Record and track customer orders.</p>
               </div>
-            </div>
-
-            <div class="dropdown">
-              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-                <span class="profile-name d-none d-sm-inline">jatin mishra</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="login.html">Sign out</a></li>
-              </ul>
             </div>
           </div>
-        </div>
-      </nav>
-<section class="panel mt-3">
-            <div class="panel-header">
-              <div>
-                <h2 class="h5 mb-1 section-title"><i class="bi bi-people" aria-hidden="true"></i><span>Recent Users</span></h2>
-                <p class="text-muted mb-0">Latest account activity across the workspace.</p>
-              </div>
-              <a class="btn btn-outline-secondary btn-sm" href="users.html">Manage Users</a>
+
+          <section class="row g-3 mt-1" aria-label="Order summary">
+            <div class="col-12 col-sm-6 col-xl-3">
+              <article class="metric-card metric-primary">
+                <div class="metric-top">
+                  <span class="metric-label">Total Orders</span>
+                  <span class="metric-icon"><i class="bi bi-bag-check" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value" id="metricTotalOrders">&mdash;</div>
+                <div class="metric-meta"><span>all time</span></div>
+              </article>
             </div>
-            <div class="table-responsive">
-              <table class="table align-middle mb-0">
-                <thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col">Team</th><th scope="col">Status</th><th scope="col">Joined</th><th scope="col" class="text-end">Action</th></tr></thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-1.jpg" alt="Sarah Ahmed">
-                        <div>
-                          <p class="fw-semibold mb-0">Sarah Ahmed</p>
-                          <p class="text-muted small mb-0">sarah@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Admin</td>
-                    <td>Operations</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Jan 12, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-2.jpg" alt="Rafi Khan">
-                        <div>
-                          <p class="fw-semibold mb-0">Rafi Khan</p>
-                          <p class="text-muted small mb-0">rafi@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Manager</td>
-                    <td>Sales</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Feb 03, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-3.jpg" alt="Nadia Islam">
-                        <div>
-                          <p class="fw-semibold mb-0">Nadia Islam</p>
-                          <p class="text-muted small mb-0">nadia@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Editor</td>
-                    <td>Content</td>
-                    <td><span class="badge text-bg-warning">Pending</span></td>
-                    <td>Mar 18, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-4.jpg" alt="Mina Torres">
-                        <div>
-                          <p class="fw-semibold mb-0">Mina Torres</p>
-                          <p class="text-muted small mb-0">mina@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Viewer</td>
-                    <td>Finance</td>
-                    <td><span class="badge text-bg-secondary">Suspended</span></td>
-                    <td>Apr 07, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-5.jpg" alt="Jon Oliver">
-                        <div>
-                          <p class="fw-semibold mb-0">Jon Oliver</p>
-                          <p class="text-muted small mb-0">jon@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Analyst</td>
-                    <td>Data</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Apr 22, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="col-12 col-sm-6 col-xl-3">
+              <article class="metric-card metric-success">
+                <div class="metric-top">
+                  <span class="metric-label">Revenue</span>
+                  <span class="metric-icon"><i class="bi bi-currency-dollar" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value" id="metricRevenue">&mdash;</div>
+                <div class="metric-meta"><span>total order value</span></div>
+              </article>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+              <article class="metric-card metric-warning">
+                <div class="metric-top">
+                  <span class="metric-label">Pending</span>
+                  <span class="metric-icon"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value" id="metricPending">&mdash;</div>
+                <div class="metric-meta"><span>awaiting fulfillment</span></div>
+              </article>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+              <article class="metric-card metric-danger">
+                <div class="metric-top">
+                  <span class="metric-label">Completed</span>
+                  <span class="metric-icon"><i class="bi bi-check2-circle" aria-hidden="true"></i></span>
+                </div>
+                <div class="metric-value" id="metricCompleted">&mdash;</div>
+                <div class="metric-meta"><span>fulfilled orders</span></div>
+              </article>
             </div>
           </section>
-          
-      <footer class="admin-footer">
-        <div class="container-fluid px-3 px-lg-4">
-          <span>Copyright 2026 admin panel. <br> Developed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">Mr. jatin  mishra</a> • Distributed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">mishra developer</a> </span>
-          <span>Professional dashboard template.</span>
+
+          <section class="row g-3 mt-3">
+            <div class="col-12 col-xl-5">
+              <form class="panel needs-validation" novalidate id="orderForm">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-plus-circle" aria-hidden="true"></i><span>New Order</span></h2>
+                    <p class="text-muted mb-0">Add an order record.</p>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label" for="orderCustomerName">Customer Name</label>
+                    <input class="form-control" id="orderCustomerName" type="text" placeholder="Enter customer name..." required>
+                    <div class="invalid-feedback">Customer name is required.</div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="orderCustomerEmail">Customer Email</label>
+                    <input class="form-control" id="orderCustomerEmail" type="email" placeholder="Enter customer email...">
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="orderAmount">Amount ($)</label>
+                    <input class="form-control" id="orderAmount" type="number" min="0" step="0.01" placeholder="0.00" required>
+                    <div class="invalid-feedback">Amount is required.</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="orderStatus">Status</label>
+                    <select class="form-select" id="orderStatus">
+                      <option value="pending">Pending</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle" aria-hidden="true"></i> Create Order</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="col-12 col-xl-7">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-list-check" aria-hidden="true"></i><span>All Orders</span></h2>
+                    <p class="text-muted mb-0">Every order recorded in the system.</p>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle mb-0" id="ordersTable" data-searchable-table>
+                    <thead><tr><th scope="col">Customer</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col">Date</th><th scope="col" class="text-end">Action</th></tr></thead>
+                    <tbody id="ordersTableBody">
+                      <tr><td colspan="5" class="text-muted small">Loading orders...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
-      </footer>
+      </main>
+
+      <div id="footerSlot"></div>
     </div>
   </div>
 
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    var statusVariant = { pending: "warning", completed: "success", cancelled: "secondary" };
+
+    function formatCurrency(amount) {
+      return "$" + Number(amount || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatDate(value) {
+      var d = new Date(value);
+      if (isNaN(d.getTime())) return "-";
+      return d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+    }
+
+    function renderMetrics(orders) {
+      var revenue = orders.reduce(function (sum, o) { return sum + (Number(o.amount) || 0); }, 0);
+      var pending = orders.filter(function (o) { return o.status === "pending"; }).length;
+      var completed = orders.filter(function (o) { return o.status === "completed"; }).length;
+
+      document.getElementById("metricTotalOrders").textContent = orders.length.toLocaleString("en-US");
+      document.getElementById("metricRevenue").textContent = formatCurrency(revenue);
+      document.getElementById("metricPending").textContent = pending.toLocaleString("en-US");
+      document.getElementById("metricCompleted").textContent = completed.toLocaleString("en-US");
+    }
+
+    function renderOrders(orders) {
+      var body = document.getElementById("ordersTableBody");
+
+      if (!orders.length) {
+        body.innerHTML = '<tr><td colspan="5" class="text-muted small">No orders yet. Create one to see it here.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = "";
+      orders.forEach(function (order) {
+        var row = document.createElement("tr");
+        row.innerHTML =
+          '<td><p class="fw-semibold mb-0"></p><p class="text-muted small mb-0"></p></td>' +
+          '<td class="amount-cell"></td>' +
+          '<td><span class="badge text-bg-' + (statusVariant[order.status] || "secondary") + ' status-cell"></span></td>' +
+          '<td class="date-cell"></td>' +
+          '<td class="text-end"><div class="d-flex gap-2 justify-content-end">' +
+            '<button type="button" class="btn btn-light btn-sm edit-order-btn"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
+            '<button type="button" class="btn btn-light btn-sm text-danger delete-order-btn"><i class="bi bi-trash" aria-hidden="true"></i></button>' +
+          '</div></td>';
+
+        row.querySelector(".fw-semibold").textContent = order.customerName;
+        row.querySelector(".text-muted").textContent = order.customerEmail || "";
+        row.querySelector(".amount-cell").textContent = formatCurrency(order.amount);
+        row.querySelector(".status-cell").textContent = order.status;
+        row.querySelector(".date-cell").textContent = formatDate(order.createdAt);
+
+        row.querySelector(".edit-order-btn").addEventListener("click", function () { editOrder(order); });
+        row.querySelector(".delete-order-btn").addEventListener("click", function () { deleteOrder(order._id, order.customerName); });
+
+        body.appendChild(row);
+      });
+    }
+
+    async function editOrder(order) {
+      var updated = await window.editDialog({
+        title: "Edit Order",
+        fields: [
+          { key: "customerName", label: "Customer Name", type: "text", required: true },
+          { key: "customerEmail", label: "Customer Email", type: "email" },
+          { key: "amount", label: "Amount ($)", type: "number", required: true },
+          { key: "status", label: "Status", type: "select", options: ["pending", "completed", "cancelled"] }
+        ],
+        values: { customerName: order.customerName, customerEmail: order.customerEmail, amount: order.amount, status: order.status }
+      });
+
+      if (!updated) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/orders/" + order._id, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updated)
+        });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Order updated.", "success");
+          loadOrders();
+        } else {
+          window.showToast(result.message || "Failed to update order.", "error");
+        }
+      } catch (error) {
+        console.error("Update order failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteOrder(id, name) {
+      var confirmed = await window.confirmDialog('Delete order for "' + name + '"? This cannot be undone.', { title: "Delete Order" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/orders/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Order deleted.", "success");
+          loadOrders();
+        } else {
+          window.showToast(result.message || "Failed to delete order.", "error");
+        }
+      } catch (error) {
+        console.error("Delete order failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        var response = await window.authorizedFetch("/api/orders");
+        if (!response) return;
+        var result = await response.json();
+
+        if (!result.success) {
+          window.showToast(result.message || "Failed to load orders.", "error");
+          return;
+        }
+
+        renderMetrics(result.data);
+        renderOrders(result.data);
+      } catch (error) {
+        console.error("Load orders failed:", error);
+        window.showToast("Something went wrong loading orders.", "error");
+      }
+    }
+
+    var form = document.getElementById("orderForm");
+    if (form) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        var payload = {
+          customerName: document.getElementById("orderCustomerName").value.trim(),
+          customerEmail: document.getElementById("orderCustomerEmail").value.trim(),
+          amount: document.getElementById("orderAmount").value,
+          status: document.getElementById("orderStatus").value
+        };
+
+        try {
+          var response = await window.authorizedFetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (!response) return;
+
+          var result = await response.json();
+
+          if (result.success) {
+            window.showToast(result.message || "Order created.", "success");
+            form.reset();
+            form.classList.remove("was-validated");
+            loadOrders();
+          } else {
+            window.showToast(result.message || "Failed to create order.", "error");
+          }
+        } catch (error) {
+          console.error("Create order failed:", error);
+          window.showToast("Something went wrong. Please try again.", "error");
+        }
+      });
+    }
+
+    loadOrders();
+  })();
+  </script>
 </body>
 </html>

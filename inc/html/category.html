@@ -15,85 +15,10 @@
   <div class="admin-shell">
     <div class="sidebar-backdrop" data-sidebar-close></div>
 
-    <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
-      <div class="sidebar-header">
-           <a class="brand-mark" href="index.html" aria-label="admin panel dashboard">
-    <img src="../assets/images/brand/logo/logo.png" alt="Admin Panel Logo">
-              <span class="brand-copy">
-            <span class="brand-title">Admin Panel</span>
-            <span class="brand-subtitle">jatin mishra </span>
-          </span>
-</a>
-      </div>
-
-      <div id="header"></div>
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-        <strong>jatin mishra</strong>
-        <small>Active Workspace</small>
-      </div>
-
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
-    </aside>
+    <div id="sidebarSlot"></div>
 
     <div class="admin-main">
-      <nav class="navbar admin-navbar navbar-expand bg-white">
-        <div class="container-fluid px-3 px-lg-4">
-          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" aria-label="Toggle sidebar">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Search users, orders, reports" aria-label="Search">
-          </form>
-
-          <div class="navbar-actions ms-auto">
-            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
-              <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
-            </button>
-            <div class="dropdown">
-              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                <span class="notification-dot"></span>
-                <i class="bi bi-bell" aria-hidden="true"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end notification-menu">
-                <div class="dropdown-header fw-bold text-body">Notifications</div>
-                <a class="dropdown-item" href="users.html">
-                  <span class="notification-title">New user registered</span>
-                  <span class="notification-time">4 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="charts.html">
-                  <span class="notification-title">Revenue target reached</span>
-                  <span class="notification-time">32 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="settings.html">
-                  <span class="notification-title">Security review completed</span>
-                  <span class="notification-time">1 hour ago</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="dropdown">
-              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-                <span class="profile-name d-none d-sm-inline">jatin mishra</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="login.html">Sign out</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <div id="navbarSlot"></div>
 
       <main class="dashboard-content">
         <div class="container-fluid px-3 px-lg-4 py-4">
@@ -106,31 +31,29 @@
                 <p class="text-muted mb-0">Create a new Category .</p>
               </div>
             </div>
-            <div class="heading-actions"><a class="btn btn-outline-secondary btn-sm" href="users.html"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Dashboard</a></div>
+            <div class="heading-actions"><a class="btn btn-outline-secondary btn-sm" href="/users"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Dashboard</a></div>
           </div>
 
           <section class="row g-3">
             <div class="col-12 col-xl-8">
-              <form class="panel needs-validation" novalidate>
+              <form class="panel needs-validation" novalidate id="categoryForm">
                 <div class="panel-header"><div><h2 class="h5 mb-1 section-title"><i class="bi bi-person-plus" aria-hidden="true"></i><span>Category Information</span></h2><p class="text-muted mb-0">Create a category  with validated fields.</p></div></div>
                 <div class="row g-3">
                   <div class="col-md-6"><label class="form-label" for="categoryName">Cagtegory name:-</label><input class="form-control" id="CategoryName" type="text" placeholder="Enter the category..." required><div class="invalid-feedback">First name is required.</div></div>
                   <div class="col-md-6"><label class="form-label" for="categorytext">Category Text:-</label><input class="form-control" id="categorytext" type="text" placeholder="Enter the category  text..." required><div class="invalid-feedback">text name is required.</div></div>
-                 <div class="col-md-6"><label class="form-label" for="file">Category image:-</label><input class="form-control" id="iamge" type="file" required><div class="invalid-feedback"> image is required.</div></div>
+                 <div class="col-md-6"><label class="form-label" for="file">Category image:-</label><input class="form-control" id="iamge" type="file"><div class="invalid-feedback"> image is required.</div></div>
 
                   <div class="col-md-6"><label class="form-label" for="type">Type:-</label><select class="form-select" id="type" required><option value="">Choose Type</option><option>Electronics</option><option>Fashion</option><option>Grocery</option><option>Beauty</option></select><div class="invalid-feedback">Choose a role.</div></div>
                   <div class="col-12"><label class="form-label" for="notes">Notes:-</label><textarea class="form-control" id="notes" rows="4" placeholder="Optional onboarding notes"></textarea></div>
                 </div>
-                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4"><a class="btn btn-outline-secondary" href="users.html">Cancel</a><button class="btn btn-primary" type="submit"><i class="bi bi-person-check" aria-hidden="true"></i> Create Category</button></div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4"><a class="btn btn-outline-secondary" href="/users">Cancel</a><button class="btn btn-primary" type="submit"><i class="bi bi-person-check" aria-hidden="true"></i> Create Category</button></div>
               </form>
             </div>
             <div class="col-12 col-xl-4">
               <div class="panel h-100">
                 <h2 class="h5 mb-3 section-title"><i class="bi bi-list-check" aria-hidden="true"></i><span>Access All Category</span></h2>
-                <div class="activity-list">
-                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Electronics</p><p class="text-muted small mb-0">Start with the least privileged role.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">Add grocery</p><p class="text-muted small mb-0">Team ownership controls dashboards.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Send invite</p><p class="text-muted small mb-0">Users receive activation by email.</p></div></div>
+                <div class="activity-list" id="categoryList">
+                  <p class="text-muted small mb-0">Loading categories...</p>
                 </div>
               </div>
             </div>
@@ -138,17 +61,166 @@
         </div>
       </main>
 
-      <footer class="admin-footer">
-        <div class="container-fluid px-3 px-lg-4">
-          <span>Copyright 2026 admin panel. <br> Developed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">Mr. jatin  mishra</a> • Distributed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">mishra developer</a> </span>
-          <span>Professional dashboard template.</span>
-          <span>Validated user creation form.</span>
-        </div>
-      </footer>
+      <div id="footerSlot"></div>
     </div>
   </div>
 
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    var listEl = document.getElementById("categoryList");
+    var fallbackImage = "../assets/images/brand/logo/logo.png";
+
+    function renderCategories(categories) {
+      if (!listEl) return;
+
+      if (!categories || !categories.length) {
+        listEl.innerHTML = '<p class="text-muted small mb-0">No categories yet. Create one to see it here.</p>';
+        return;
+      }
+
+      listEl.innerHTML = "";
+      categories.forEach(function (category) {
+        var item = document.createElement("div");
+        item.className = "activity-item";
+        item.innerHTML =
+          '<img class="avatar-img avatar-sm" alt="">' +
+          '<div class="d-flex align-items-center justify-content-between gap-2">' +
+            '<div><p class="mb-1 fw-semibold"></p><p class="text-muted small mb-0"></p></div>' +
+            '<div class="d-flex gap-1">' +
+              '<button type="button" class="btn btn-light btn-sm edit-category-btn" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
+              '<button type="button" class="btn btn-light btn-sm text-danger delete-category-btn" title="Delete"><i class="bi bi-trash" aria-hidden="true"></i></button>' +
+            '</div>' +
+          '</div>';
+        item.querySelector("img").src = category.image || fallbackImage;
+        item.querySelector("img").alt = category.name;
+        item.querySelector(".fw-semibold").textContent = category.name;
+        item.querySelector(".text-muted").textContent = category.text || category.type || "Category";
+        item.querySelector(".edit-category-btn").addEventListener("click", function () {
+          editCategory(category);
+        });
+        item.querySelector(".delete-category-btn").addEventListener("click", function () {
+          deleteCategory(category._id, category.name);
+        });
+        listEl.appendChild(item);
+      });
+    }
+
+    async function editCategory(category) {
+      var updated = await window.editDialog({
+        title: "Edit Category",
+        fields: [
+          { key: "name", label: "Category Name", type: "text", required: true },
+          { key: "text", label: "Category Text", type: "text" },
+          { key: "type", label: "Type", type: "select", options: ["Electronics", "Fashion", "Grocery", "Beauty"] },
+          { key: "notes", label: "Notes", type: "textarea" },
+          { key: "image", label: "Replace Image (optional)", type: "file" }
+        ],
+        values: { name: category.name, text: category.text, type: category.type, notes: category.notes }
+      });
+
+      if (!updated) return;
+
+      var formData = new FormData();
+      formData.append("name", updated.name);
+      formData.append("text", updated.text);
+      formData.append("type", updated.type);
+      formData.append("notes", updated.notes);
+      if (updated.image) formData.append("image", updated.image);
+
+      try {
+        var response = await window.authorizedFetch("/api/categories/" + category._id, {
+          method: "PUT",
+          body: formData
+        });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Category updated.", "success");
+          loadCategories();
+        } else {
+          window.showToast(result.message || "Failed to update category.", "error");
+        }
+      } catch (error) {
+        console.error("Update category failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteCategory(id, name) {
+      var confirmed = await window.confirmDialog('Delete category "' + name + '"? This cannot be undone.', { title: "Delete Category" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/categories/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Category deleted.", "success");
+          loadCategories();
+        } else {
+          window.showToast(result.message || "Failed to delete category.", "error");
+        }
+      } catch (error) {
+        console.error("Delete category failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadCategories() {
+      var response = await window.authorizedFetch("/api/categories");
+      if (!response) return;
+      var result = await response.json();
+      if (result.success) renderCategories(result.data);
+    }
+
+    var form = document.getElementById("categoryForm");
+    if (form) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        var formData = new FormData();
+        formData.append("name", document.getElementById("CategoryName").value.trim());
+        formData.append("text", document.getElementById("categorytext").value.trim());
+        formData.append("type", document.getElementById("type").value);
+        formData.append("notes", document.getElementById("notes").value.trim());
+
+        var imageFile = document.getElementById("iamge").files[0];
+        if (imageFile) formData.append("image", imageFile);
+
+        try {
+          var response = await window.authorizedFetch("/api/categories", {
+            method: "POST",
+            body: formData
+          });
+          if (!response) return;
+
+          var result = await response.json();
+
+          if (result.success) {
+            window.showToast(result.message || "Category created.", "success");
+            form.reset();
+            form.classList.remove("was-validated");
+            loadCategories();
+          } else {
+            window.showToast(result.message || "Failed to create category.", "error");
+          }
+        } catch (error) {
+          console.error("Create category failed:", error);
+          window.showToast("Something went wrong. Please try again.", "error");
+        }
+      });
+    }
+
+    loadCategories();
+  })();
+  </script>
 </body>
 </html>

@@ -15,86 +15,10 @@
   <div class="admin-shell">
     <div class="sidebar-backdrop" data-sidebar-close></div>
 
-    <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
-      <div class="sidebar-header">
-             <a class="brand-mark" href="index.html" aria-label="admin panel dashboard">
-    <img src="../assets/images/brand/logo/logo.png" alt="Admin Panel Logo">
-              <span class="brand-copy">
-            <span class="brand-title">Admin Panel</span>
-            <span class="brand-subtitle">jatin mishra </span>
-          </span>
-</a>
-      </div>
-
-      <div id="header"></div>
-
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-        <strong>jatin mishra</strong>
-        <small>Active Workspace</small>
-      </div>
-
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
-    </aside>
+    <div id="sidebarSlot"></div>
 
     <div class="admin-main">
-      <nav class="navbar admin-navbar navbar-expand bg-white">
-        <div class="container-fluid px-3 px-lg-4">
-          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" aria-label="Toggle sidebar">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Search users, orders, reports" aria-label="Search">
-          </form>
-
-          <div class="navbar-actions ms-auto">
-            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
-              <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
-            </button>
-            <div class="dropdown">
-              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                <span class="notification-dot"></span>
-                <i class="bi bi-bell" aria-hidden="true"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end notification-menu">
-                <div class="dropdown-header fw-bold text-body">Notifications</div>
-                <a class="dropdown-item" href="users.html">
-                  <span class="notification-title">New user registered</span>
-                  <span class="notification-time">4 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="charts.html">
-                  <span class="notification-title">Revenue target reached</span>
-                  <span class="notification-time">32 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="settings.html">
-                  <span class="notification-title">Security review completed</span>
-                  <span class="notification-time">1 hour ago</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="dropdown">
-              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-                <span class="profile-name d-none d-sm-inline">jatin mishra</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="login.html">Sign out</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <div id="navbarSlot"></div>
 
       <main class="dashboard-content">
         <div class="container-fluid px-3 px-lg-4 py-4">
@@ -107,7 +31,7 @@
                 <p class="text-muted mb-0">Monitor performance, sales, users, and support from one clean workspace.</p>
               </div>
             </div>
-            <div class="heading-actions"><button class="btn btn-outline-secondary btn-sm" type="button"><i class="bi bi-download" aria-hidden="true"></i> Export</button><button class="btn btn-primary btn-sm" type="button"><i class="bi bi-file-earmark-plus" aria-hidden="true"></i> Create Report</button></div>
+            <div class="heading-actions"><button class="btn btn-outline-secondary btn-sm" type="button" id="exportUsersBtn"><i class="bi bi-download" aria-hidden="true"></i> Export</button><button class="btn btn-primary btn-sm" type="button" id="createReportBtn"><i class="bi bi-file-earmark-plus" aria-hidden="true"></i> Create Report</button></div>
           </div>
 
           <section class="row g-3 mt-1" aria-label="Dashboard metrics">
@@ -117,10 +41,9 @@
                   <span class="metric-label">Revenue</span>
                   <span class="metric-icon"><i class="bi bi-currency-dollar" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">$48,240</div>
+                <div class="metric-value" id="metricRevenue">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-success">+12.5%</span>
-                  <span>from last month</span>
+                  <span>total order value</span>
                 </div>
               </article>
             </div>
@@ -131,10 +54,9 @@
                   <span class="metric-label">Orders</span>
                   <span class="metric-icon"><i class="bi bi-bag-check" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">1,284</div>
+                <div class="metric-value" id="metricOrders">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-success">+8.2%</span>
-                  <span>new orders</span>
+                  <span>total orders</span>
                 </div>
               </article>
             </div>
@@ -145,10 +67,9 @@
                   <span class="metric-label">Customers</span>
                   <span class="metric-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">8,742</div>
+                <div class="metric-value" id="metricCustomers">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-success">+5.1%</span>
-                  <span>active users</span>
+                  <span>registered users</span>
                 </div>
               </article>
             </div>
@@ -156,13 +77,12 @@
             <div class="col-12 col-sm-6 col-xl-3">
               <article class="metric-card metric-danger">
                 <div class="metric-top">
-                  <span class="metric-label">Tickets</span>
-                  <span class="metric-icon"><i class="bi bi-life-preserver" aria-hidden="true"></i></span>
+                  <span class="metric-label">Products</span>
+                  <span class="metric-icon"><i class="bi bi-box-seam" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">36</div>
+                <div class="metric-value" id="metricProducts">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-danger">3 urgent</span>
-                  <span>need review</span>
+                  <span>across all categories</span>
                 </div>
               </article>
             </div>
@@ -176,16 +96,11 @@
                     <h2 class="h5 mb-1 section-title"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Sales Performance</span></h2>
                     <p class="text-muted mb-0">Monthly revenue compared with operational targets.</p>
                   </div>
-                  <a class="btn btn-light btn-sm" href="charts.html">View Details</a>
+                  <a class="btn btn-light btn-sm" href="/charts">View Details</a>
                 </div>
 
-                <div class="chart-bars" aria-label="Sales performance chart">
-                  <div class="chart-column bar-42"><span></span><small>Jan</small></div>
-                  <div class="chart-column bar-58"><span></span><small>Feb</small></div>
-                  <div class="chart-column bar-51"><span></span><small>Mar</small></div>
-                  <div class="chart-column bar-72"><span></span><small>Apr</small></div>
-                  <div class="chart-column bar-66"><span></span><small>May</small></div>
-                  <div class="chart-column bar-83"><span></span><small>Jun</small></div>
+                <div class="chart-bars" id="salesChart" aria-label="Sales performance chart">
+                  <p class="text-muted small mb-0">Loading chart...</p>
                 </div>
               </div>
             </div>
@@ -194,15 +109,13 @@
               <div class="panel h-100">
                 <div class="panel-header">
                   <div>
-                    <h2 class="h5 mb-1 section-title"><i class="bi bi-activity" aria-hidden="true"></i><span>Team Activity</span></h2>
-                    <p class="text-muted mb-0">Recent operational updates.</p>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-activity" aria-hidden="true"></i><span>Recent Activity</span></h2>
+                    <p class="text-muted mb-0">Latest updates from your workspace.</p>
                   </div>
                 </div>
 
-                <div class="activity-list">
-                  <div class="activity-item"><span class="activity-dot bg-primary"></span><div><p class="mb-1 fw-semibold">New campaign launched</p><p class="text-muted small mb-0">Marketing team published the May offer.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-success"></span><div><p class="mb-1 fw-semibold">Payment batch cleared</p><p class="text-muted small mb-0">246 invoices were processed successfully.</p></div></div>
-                  <div class="activity-item"><span class="activity-dot bg-warning"></span><div><p class="mb-1 fw-semibold">Support queue rising</p><p class="text-muted small mb-0">Average first response time is 18 minutes.</p></div></div>
+                <div class="activity-list" id="activityList">
+                  <p class="text-muted small mb-0">Loading activity...</p>
                 </div>
               </div>
             </div>
@@ -214,92 +127,13 @@
                 <h2 class="h5 mb-1 section-title"><i class="bi bi-people" aria-hidden="true"></i><span>Recent Users</span></h2>
                 <p class="text-muted mb-0">Latest account activity across the workspace.</p>
               </div>
-              <a class="btn btn-outline-secondary btn-sm" href="users.html">Manage Users</a>
+              <a class="btn btn-outline-secondary btn-sm" href="/users">Manage Users</a>
             </div>
             <div class="table-responsive">
               <table class="table align-middle mb-0">
-                <thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col">Team</th><th scope="col">Status</th><th scope="col">Joined</th><th scope="col" class="text-end">Action</th></tr></thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-1.jpg" alt="Sarah Ahmed">
-                        <div>
-                          <p class="fw-semibold mb-0">Sarah Ahmed</p>
-                          <p class="text-muted small mb-0">sarah@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Admin</td>
-                    <td>Operations</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Jan 12, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-2.jpg" alt="Rafi Khan">
-                        <div>
-                          <p class="fw-semibold mb-0">Rafi Khan</p>
-                          <p class="text-muted small mb-0">rafi@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Manager</td>
-                    <td>Sales</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Feb 03, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-3.jpg" alt="Nadia Islam">
-                        <div>
-                          <p class="fw-semibold mb-0">Nadia Islam</p>
-                          <p class="text-muted small mb-0">nadia@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Editor</td>
-                    <td>Content</td>
-                    <td><span class="badge text-bg-warning">Pending</span></td>
-                    <td>Mar 18, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-4.jpg" alt="Mina Torres">
-                        <div>
-                          <p class="fw-semibold mb-0">Mina Torres</p>
-                          <p class="text-muted small mb-0">mina@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Viewer</td>
-                    <td>Finance</td>
-                    <td><span class="badge text-bg-secondary">Suspended</span></td>
-                    <td>Apr 07, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-5.jpg" alt="Jon Oliver">
-                        <div>
-                          <p class="fw-semibold mb-0">Jon Oliver</p>
-                          <p class="text-muted small mb-0">jon@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Analyst</td>
-                    <td>Data</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Apr 22, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
+                <thead><tr><th scope="col">User</th><th scope="col">Joined</th><th scope="col" class="text-end">Action</th></tr></thead>
+                <tbody id="recentUsersBody">
+                  <tr><td colspan="3" class="text-muted small">Loading users...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -307,16 +141,228 @@
         </div>
       </main>
 
-      <footer class="admin-footer">
-        <div class="container-fluid px-3 px-lg-4">
-          <span>Copyright 2026 admin panel. <br> Developed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">Mr. jatin  mishra</a> • Distributed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">mishra developer</a> </span>
-          <span>Professional dashboard template.</span>
-        </div>
-      </footer>
+      <div id="footerSlot"></div>
     </div>
   </div>
 
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    function formatCurrency(amount) {
+      return "$" + Number(amount || 0).toLocaleString("en-US");
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      var d = new Date(value);
+      if (isNaN(d.getTime())) return "-";
+      return d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+    }
+
+    function timeAgo(value) {
+      var diffMs = Date.now() - new Date(value).getTime();
+      var minutes = Math.floor(diffMs / 60000);
+      if (minutes < 1) return "just now";
+      if (minutes < 60) return minutes + " minute" + (minutes === 1 ? "" : "s") + " ago";
+      var hours = Math.floor(minutes / 60);
+      if (hours < 24) return hours + " hour" + (hours === 1 ? "" : "s") + " ago";
+      var days = Math.floor(hours / 24);
+      return days + " day" + (days === 1 ? "" : "s") + " ago";
+    }
+
+    function renderChart(salesByMonth) {
+      var chart = document.getElementById("salesChart");
+      if (!chart) return;
+
+      if (!salesByMonth || !salesByMonth.length) {
+        chart.innerHTML = '<p class="text-muted small mb-0">No order data yet.</p>';
+        return;
+      }
+
+      chart.innerHTML = "";
+      salesByMonth.forEach(function (month) {
+        var column = document.createElement("div");
+        column.className = "chart-column";
+
+        var bar = document.createElement("span");
+        bar.style.setProperty("--bar-size", Math.max(month.percent, 4) + "%");
+        bar.title = month.label + ": " + formatCurrency(month.total);
+
+        var label = document.createElement("small");
+        label.textContent = month.label;
+
+        column.appendChild(bar);
+        column.appendChild(label);
+        chart.appendChild(column);
+      });
+    }
+
+    function renderActivity(activity) {
+      var list = document.getElementById("activityList");
+      if (!list) return;
+
+      if (!activity || !activity.length) {
+        list.innerHTML = '<p class="text-muted small mb-0">No recent activity yet.</p>';
+        return;
+      }
+
+      list.innerHTML = "";
+      activity.forEach(function (item) {
+        var row = document.createElement("div");
+        row.className = "activity-item";
+        row.innerHTML =
+          '<span class="activity-dot bg-primary"></span>' +
+          '<div><p class="mb-1 fw-semibold"></p><p class="text-muted small mb-0"></p></div>';
+        row.querySelector(".fw-semibold").textContent = item.title;
+        row.querySelector(".text-muted").textContent = timeAgo(item.date);
+        list.appendChild(row);
+      });
+    }
+
+    function renderRecentUsers(users) {
+      var body = document.getElementById("recentUsersBody");
+      if (!body) return;
+
+      if (!users || !users.length) {
+        body.innerHTML = '<tr><td colspan="3" class="text-muted small">No users yet.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = "";
+      users.forEach(function (user) {
+        var row = document.createElement("tr");
+        row.innerHTML =
+          '<td><div class="d-flex align-items-center gap-2"><img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt=""><div><p class="fw-semibold mb-0"></p><p class="text-muted small mb-0"></p></div></div></td>' +
+          '<td class="joined-cell"></td>' +
+          '<td class="text-end"><a class="btn btn-light btn-sm" href="/users">View</a></td>';
+        row.querySelector(".fw-semibold").textContent = user.name;
+        row.querySelector(".text-muted").textContent = user.email;
+        row.querySelector(".joined-cell").textContent = formatDate(user.createdAt);
+        body.appendChild(row);
+      });
+    }
+
+    var lastDashboardData = null;
+
+    async function loadDashboard() {
+      try {
+        var response = await window.authorizedFetch("/api/dashboard/summary");
+        if (!response) return;
+
+        var result = await response.json();
+        if (!result.success) {
+          if (window.showToast) window.showToast(result.message || "Failed to load dashboard data.", "error");
+          return;
+        }
+
+        var data = result.data;
+        lastDashboardData = data;
+        document.getElementById("metricRevenue").textContent = formatCurrency(data.revenue);
+        document.getElementById("metricOrders").textContent = data.ordersCount.toLocaleString("en-US");
+        document.getElementById("metricCustomers").textContent = data.customersCount.toLocaleString("en-US");
+        document.getElementById("metricProducts").textContent = data.productsCount.toLocaleString("en-US");
+
+        renderChart(data.salesByMonth);
+        renderActivity(data.recentActivity);
+        renderRecentUsers(data.recentUsers);
+
+      } catch (error) {
+        console.error("Dashboard load failed:", error);
+        if (window.showToast) window.showToast("Something went wrong loading the dashboard.", "error");
+      }
+    }
+
+    function downloadFile(filename, content, mimeType) {
+      var blob = new Blob([content], { type: mimeType });
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function csvEscape(value) {
+      var str = String(value == null ? "" : value);
+      if (/[",\n]/.test(str)) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    }
+
+    // ================= EXPORT USERS (CSV) =================
+    var exportBtn = document.getElementById("exportUsersBtn");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", async function () {
+        try {
+          var response = await window.authorizedFetch("/api/users");
+          if (!response) return;
+          var result = await response.json();
+
+          if (!result.success || !result.data.length) {
+            window.showToast("No users to export.", "error");
+            return;
+          }
+
+          var rows = [["Name", "Email", "Joined"]];
+          result.data.forEach(function (user) {
+            rows.push([user.name, user.email, formatDate(user.createdAt)]);
+          });
+
+          var csv = rows.map(function (row) { return row.map(csvEscape).join(","); }).join("\n");
+          downloadFile("users-export-" + Date.now() + ".csv", csv, "text/csv");
+          window.showToast("Exported " + result.data.length + " users.", "success");
+        } catch (error) {
+          console.error("Export failed:", error);
+          window.showToast("Export failed. Please try again.", "error");
+        }
+      });
+    }
+
+    // ================= CREATE REPORT (TXT SUMMARY) =================
+    var createReportBtn = document.getElementById("createReportBtn");
+    if (createReportBtn) {
+      createReportBtn.addEventListener("click", function () {
+        if (!lastDashboardData) {
+          window.showToast("Dashboard data is still loading. Try again in a moment.", "error");
+          return;
+        }
+
+        var data = lastDashboardData;
+        var lines = [
+          "Dashboard Report",
+          "Generated: " + new Date().toLocaleString("en-US"),
+          "",
+          "Revenue: " + formatCurrency(data.revenue),
+          "Orders: " + data.ordersCount,
+          "Customers: " + data.customersCount,
+          "Products: " + data.productsCount,
+          "Categories: " + data.categoriesCount,
+          "",
+          "Sales by Month:"
+        ];
+        (data.salesByMonth || []).forEach(function (m) {
+          lines.push("  " + m.label + ": " + formatCurrency(m.total));
+        });
+        lines.push("", "Recent Activity:");
+        (data.recentActivity || []).forEach(function (a) {
+          lines.push("  - " + a.title + " (" + formatDate(a.date) + ")");
+        });
+
+        downloadFile("dashboard-report-" + Date.now() + ".txt", lines.join("\n"), "text/plain");
+        window.showToast("Report downloaded.", "success");
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", loadDashboard);
+    } else {
+      loadDashboard();
+    }
+  })();
+  </script>
 </body>
 </html>

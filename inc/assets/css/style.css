@@ -893,9 +893,52 @@ html[data-theme="dark"] .profile-button .avatar-sm {
   margin-bottom: 0.9rem;
 }
 
+.search-results-menu {
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 1050;
+}
+
 .auth-body {
+  position: relative;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fbff 0%, #eaf2ff 44%, #eef8f6 100%);
+  overflow: hidden;
+  background: linear-gradient(135deg, #eef4ff 0%, #dbe8ff 42%, #e2f4ef 100%);
+}
+
+.auth-body::before,
+.auth-body::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+.auth-body::before {
+  top: -180px;
+  left: -140px;
+  width: 480px;
+  height: 480px;
+  background: rgba(37, 99, 235, 0.28);
+}
+
+.auth-body::after {
+  bottom: -200px;
+  right: -160px;
+  width: 520px;
+  height: 520px;
+  background: rgba(15, 118, 110, 0.24);
+}
+
+.auth-page {
+  position: relative;
+  z-index: 1;
 }
 
 .auth-page,
@@ -1251,6 +1294,14 @@ html[data-theme="dark"] .progress {
 
 html[data-theme="dark"] .auth-body {
   background: linear-gradient(135deg, #0b1120 0%, #111827 48%, #10201f 100%);
+}
+
+html[data-theme="dark"] .auth-body::before {
+  background: rgba(37, 99, 235, 0.32);
+}
+
+html[data-theme="dark"] .auth-body::after {
+  background: rgba(15, 118, 110, 0.28);
 }
 
 .auth-card,

@@ -15,86 +15,10 @@
   <div class="admin-shell">
     <div class="sidebar-backdrop" data-sidebar-close></div>
 
-    <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
-      <div class="sidebar-header">
-     <a class="brand-mark" href="index.html" aria-label="admin panel dashboard">
-    <img src="../assets/images/brand/logo/logo.png" alt="Admin Panel Logo">
-              <span class="brand-copy">
-            <span class="brand-title">Admin Panel</span>
-            <span class="brand-subtitle">jatin mishra </span>
-          </span>
-</a>
-      </div>
-
-      <div id="header"></div>
-
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-        <strong>jatin mishra</strong>
-        <small>Active Workspace</small>
-      </div>
-
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
-    </aside>
+    <div id="sidebarSlot"></div>
 
     <div class="admin-main">
-      <nav class="navbar admin-navbar navbar-expand bg-white">
-        <div class="container-fluid px-3 px-lg-4">
-          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" aria-label="Toggle sidebar">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Search users, roles, teams" aria-label="Search">
-          </form>
-
-          <div class="navbar-actions ms-auto">
-            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
-              <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
-            </button>
-            <div class="dropdown">
-              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                <span class="notification-dot"></span>
-                <i class="bi bi-bell" aria-hidden="true"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end notification-menu">
-                <div class="dropdown-header fw-bold text-body">Notifications</div>
-                <a class="dropdown-item" href="users.html">
-                  <span class="notification-title">New user registered</span>
-                  <span class="notification-time">4 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="charts.html">
-                  <span class="notification-title">Revenue target reached</span>
-                  <span class="notification-time">32 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="settings.html">
-                  <span class="notification-title">Security review completed</span>
-                  <span class="notification-time">1 hour ago</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="dropdown">
-              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-                <span class="profile-name d-none d-sm-inline">jatin mishra</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="login.html">Sign out</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <div id="navbarSlot"></div>
 
       <main class="dashboard-content">
         <div class="container-fluid px-3 px-lg-4 py-4">
@@ -104,10 +28,10 @@
               <div>
                 <p class="eyebrow mb-1">Management</p>
                 <h1 class="h3 mb-1">Users</h1>
-                <p class="text-muted mb-0">Review accounts, roles, account status, and team ownership.</p>
+                <p class="text-muted mb-0">Review all registered accounts.</p>
               </div>
             </div>
-            <div class="heading-actions"><a class="btn btn-outline-secondary btn-sm" href="tables.html"><i class="bi bi-download" aria-hidden="true"></i> Export</a><a class="btn btn-primary btn-sm" href="add-user.html"><i class="bi bi-person-plus" aria-hidden="true"></i> Add User</a></div>
+            <div class="heading-actions"><a class="btn btn-outline-secondary btn-sm" href="/tables"><i class="bi bi-download" aria-hidden="true"></i> Export</a><a class="btn btn-primary btn-sm" href="/add-user"><i class="bi bi-person-plus" aria-hidden="true"></i> Add User</a></div>
           </div>
 
           <section class="row g-3 mt-1" aria-label="User summary">
@@ -117,10 +41,9 @@
                   <span class="metric-label">Total Users</span>
                   <span class="metric-icon"><i class="bi bi-people" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">8,742</div>
+                <div class="metric-value" id="metricTotalUsers">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-success">+5.1%</span>
-                  <span>this month</span>
+                  <span>registered accounts</span>
                 </div>
               </article>
             </div>
@@ -128,13 +51,12 @@
             <div class="col-12 col-sm-6 col-xl-3">
               <article class="metric-card metric-success">
                 <div class="metric-top">
-                  <span class="metric-label">Active</span>
-                  <span class="metric-icon"><i class="bi bi-check2-circle" aria-hidden="true"></i></span>
+                  <span class="metric-label">New This Week</span>
+                  <span class="metric-icon"><i class="bi bi-calendar-week" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">7,980</div>
+                <div class="metric-value" id="metricNewWeek">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-success">91%</span>
-                  <span>healthy accounts</span>
+                  <span>joined in last 7 days</span>
                 </div>
               </article>
             </div>
@@ -142,13 +64,12 @@
             <div class="col-12 col-sm-6 col-xl-3">
               <article class="metric-card metric-warning">
                 <div class="metric-top">
-                  <span class="metric-label">Pending</span>
-                  <span class="metric-icon"><i class="bi bi-hourglass-split" aria-hidden="true"></i></span>
+                  <span class="metric-label">New This Month</span>
+                  <span class="metric-icon"><i class="bi bi-calendar-month" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">184</div>
+                <div class="metric-value" id="metricNewMonth">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-warning">12</span>
-                  <span>need approval</span>
+                  <span>joined in last 30 days</span>
                 </div>
               </article>
             </div>
@@ -156,13 +77,12 @@
             <div class="col-12 col-sm-6 col-xl-3">
               <article class="metric-card metric-danger">
                 <div class="metric-top">
-                  <span class="metric-label">Suspended</span>
-                  <span class="metric-icon"><i class="bi bi-slash-circle" aria-hidden="true"></i></span>
+                  <span class="metric-label">Latest Signup</span>
+                  <span class="metric-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></span>
                 </div>
-                <div class="metric-value">38</div>
+                <div class="metric-value" id="metricLatestSignup" style="font-size:1.1rem;">&mdash;</div>
                 <div class="metric-meta">
-                  <span class="text-danger">4</span>
-                  <span>flagged today</span>
+                  <span>most recent account</span>
                 </div>
               </article>
             </div>
@@ -176,115 +96,162 @@
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <input class="form-control form-control-sm table-search" type="search" placeholder="Search users" data-table-search="usersTable" aria-label="Search users">
-                <a class="btn btn-primary btn-sm" href="add-user.html"><i class="bi bi-person-plus" aria-hidden="true"></i> Add User</a>
+                <a class="btn btn-primary btn-sm" href="/add-user"><i class="bi bi-person-plus" aria-hidden="true"></i> Add User</a>
               </div>
             </div>
             <div class="table-responsive">
               <table class="table align-middle mb-0" id="usersTable" data-searchable-table>
-                <thead><tr><th scope="col">User</th><th scope="col">Role</th><th scope="col">Team</th><th scope="col">Status</th><th scope="col">Joined</th><th scope="col" class="text-end">Action</th></tr></thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-1.jpg" alt="Sarah Ahmed">
-                        <div>
-                          <p class="fw-semibold mb-0">Sarah Ahmed</p>
-                          <p class="text-muted small mb-0">sarah@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Admin</td>
-                    <td>Operations</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Jan 12, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-2.jpg" alt="Rafi Khan">
-                        <div>
-                          <p class="fw-semibold mb-0">Rafi Khan</p>
-                          <p class="text-muted small mb-0">rafi@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Manager</td>
-                    <td>Sales</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Feb 03, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-3.jpg" alt="Nadia Islam">
-                        <div>
-                          <p class="fw-semibold mb-0">Nadia Islam</p>
-                          <p class="text-muted small mb-0">nadia@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Editor</td>
-                    <td>Content</td>
-                    <td><span class="badge text-bg-warning">Pending</span></td>
-                    <td>Mar 18, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-4.jpg" alt="Mina Torres">
-                        <div>
-                          <p class="fw-semibold mb-0">Mina Torres</p>
-                          <p class="text-muted small mb-0">mina@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Viewer</td>
-                    <td>Finance</td>
-                    <td><span class="badge text-bg-secondary">Suspended</span></td>
-                    <td>Apr 07, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center gap-2">
-                        <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar-5.jpg" alt="Jon Oliver">
-                        <div>
-                          <p class="fw-semibold mb-0">Jon Oliver</p>
-                          <p class="text-muted small mb-0">jon@example.com</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td>Analyst</td>
-                    <td>Data</td>
-                    <td><span class="badge text-bg-success">Active</span></td>
-                    <td>Apr 22, 2026</td>
-                    <td class="text-end"><a class="btn btn-light btn-sm" href="user-details.html">View</a></td>
-                  </tr>
+                <thead><tr><th scope="col">User</th><th scope="col">Joined</th><th scope="col" class="text-end">Action</th></tr></thead>
+                <tbody id="usersTableBody">
+                  <tr><td colspan="3" class="text-muted small">Loading users...</td></tr>
                 </tbody>
               </table>
             </div>
             <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mt-3">
-              <p class="text-muted small mb-0">Showing 1 to 5 of 124 users</p>
-              <nav aria-label="Users pagination"><ul class="pagination pagination-sm mb-0"><li class="page-item disabled"><a class="page-link" href="#">Previous</a></li><li class="page-item active"><a class="page-link" href="#">1</a></li><li class="page-item"><a class="page-link" href="#">2</a></li><li class="page-item"><a class="page-link" href="#">Next</a></li></ul></nav>
+              <p class="text-muted small mb-0" id="usersCountLabel">Loading...</p>
             </div>
           </section>
         </div>
       </main>
 
-      <footer class="admin-footer">
-        <div class="container-fluid px-3 px-lg-4">
-          <span>Copyright 2026 admin panel. <br> Developed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">Mr. jatin  mishra</a> • Distributed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">mishra developer</a> </span>
-          <span>Professional dashboard template.</span>
-          <span>User management dashboard.</span>
-        </div>
-      </footer>
+      <div id="footerSlot"></div>
     </div>
   </div>
 
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    function formatDate(value) {
+      var d = new Date(value);
+      if (isNaN(d.getTime())) return "-";
+      return d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+    }
+
+    function renderMetrics(users) {
+      var now = Date.now();
+      var weekMs = 7 * 24 * 60 * 60 * 1000;
+      var monthMs = 30 * 24 * 60 * 60 * 1000;
+
+      var newThisWeek = users.filter(function (u) { return now - new Date(u.createdAt).getTime() <= weekMs; }).length;
+      var newThisMonth = users.filter(function (u) { return now - new Date(u.createdAt).getTime() <= monthMs; }).length;
+      var latest = users.length ? users[0] : null;
+
+      document.getElementById("metricTotalUsers").textContent = users.length.toLocaleString("en-US");
+      document.getElementById("metricNewWeek").textContent = newThisWeek.toLocaleString("en-US");
+      document.getElementById("metricNewMonth").textContent = newThisMonth.toLocaleString("en-US");
+      document.getElementById("metricLatestSignup").textContent = latest ? formatDate(latest.createdAt) : "No users yet";
+    }
+
+    function renderTable(users) {
+      var body = document.getElementById("usersTableBody");
+      var countLabel = document.getElementById("usersCountLabel");
+
+      countLabel.textContent = "Showing all " + users.length + " user" + (users.length === 1 ? "" : "s");
+
+      if (!users.length) {
+        body.innerHTML = '<tr><td colspan="3" class="text-muted small">No users found.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = "";
+      users.forEach(function (user) {
+        var row = document.createElement("tr");
+        row.innerHTML =
+          '<td><div class="d-flex align-items-center gap-2"><img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt=""><div><p class="fw-semibold mb-0"></p><p class="text-muted small mb-0"></p></div></div></td>' +
+          '<td class="joined-cell"></td>' +
+          '<td class="text-end"><div class="d-flex gap-2 justify-content-end">' +
+            '<button type="button" class="btn btn-light btn-sm edit-user-btn"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
+            '<button type="button" class="btn btn-light btn-sm text-danger delete-user-btn"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>' +
+          '</div></td>';
+        row.querySelector(".fw-semibold").textContent = user.name;
+        row.querySelector(".text-muted").textContent = user.email;
+        row.querySelector(".joined-cell").textContent = formatDate(user.createdAt);
+        row.querySelector(".edit-user-btn").addEventListener("click", function () {
+          editUser(user);
+        });
+        row.querySelector(".delete-user-btn").addEventListener("click", function () {
+          deleteUser(user._id, user.name);
+        });
+        body.appendChild(row);
+      });
+    }
+
+    async function editUser(user) {
+      var updated = await window.editDialog({
+        title: "Edit User",
+        fields: [
+          { key: "name", label: "Name", type: "text", required: true },
+          { key: "email", label: "Email", type: "email", required: true }
+        ],
+        values: { name: user.name, email: user.email }
+      });
+
+      if (!updated) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/users/" + user._id, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updated)
+        });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "User updated.", "success");
+          loadUsers();
+        } else {
+          window.showToast(result.message || "Failed to update user.", "error");
+        }
+      } catch (error) {
+        console.error("Update user failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteUser(id, name) {
+      var confirmed = await window.confirmDialog('Delete user "' + name + '"? This cannot be undone.', { title: "Delete User" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/users/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "User deleted.", "success");
+          loadUsers();
+        } else {
+          window.showToast(result.message || "Failed to delete user.", "error");
+        }
+      } catch (error) {
+        console.error("Delete user failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        var response = await window.authorizedFetch("/api/users");
+        if (!response) return;
+        var result = await response.json();
+
+        if (!result.success) {
+          window.showToast(result.message || "Failed to load users.", "error");
+          return;
+        }
+
+        renderMetrics(result.data);
+        renderTable(result.data);
+      } catch (error) {
+        console.error("Load users failed:", error);
+        window.showToast("Something went wrong loading users.", "error");
+      }
+    }
+
+    loadUsers();
+  })();
+  </script>
 </body>
 </html>

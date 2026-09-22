@@ -15,86 +15,10 @@
   <div class="admin-shell">
     <div class="sidebar-backdrop" data-sidebar-close></div>
 
-    <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
-      <div class="sidebar-header">
-         <a class="brand-mark" href="index.html" aria-label="admin panel dashboard">
-    <img src="../assets/images/brand/logo/logo.png" alt="Admin Panel Logo">
-              <span class="brand-copy">
-            <span class="brand-title">Admin Panel</span>
-            <span class="brand-subtitle">jatin mishra </span>
-          </span>
-</a>
-      </div>
-
-      <div id="header"></div>
-
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/brand/logo/logo.png" alt="Admin jatin ">
-        <strong>Admin jatin </strong>
-        <small>Active Workspace</small>
-      </div>
-
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
-    </aside>
+    <div id="sidebarSlot"></div>
 
     <div class="admin-main">
-      <nav class="navbar admin-navbar navbar-expand bg-white">
-        <div class="container-fluid px-3 px-lg-4">
-          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" aria-label="Toggle sidebar">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Search users, orders, reports" aria-label="Search">
-          </form>
-
-          <div class="navbar-actions ms-auto">
-            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
-              <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
-            </button>
-            <div class="dropdown">
-              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                <span class="notification-dot"></span>
-                <i class="bi bi-bell" aria-hidden="true"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end notification-menu">
-                <div class="dropdown-header fw-bold text-body">Notifications</div>
-                <a class="dropdown-item" href="users.html">
-                  <span class="notification-title">New user registered</span>
-                  <span class="notification-time">4 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="charts.html">
-                  <span class="notification-title">Revenue target reached</span>
-                  <span class="notification-time">32 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="settings.html">
-                  <span class="notification-title">Security review completed</span>
-                  <span class="notification-time">1 hour ago</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="dropdown">
-              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt="Admin jatin ">
-                <span class="profile-name d-none d-sm-inline">Admin jatin </span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#" onclick="logout()">Sign out</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <div id="navbarSlot"></div>
 
       <main class="dashboard-content">
         <div class="container-fluid px-3 px-lg-4 py-4">
@@ -144,13 +68,13 @@
         </div>
 
         <div>
-          <span>Department</span>
-          <strong id="profileDepartment">Product Ops</strong>
+          <span>Member Since</span>
+          <strong id="profileMemberSince">Loading...</strong>
         </div>
 
         <div>
-          <span>Time Zone</span>
-          <strong id="profileTimezone">Asia/Kolkata</strong>
+          <span>Account Type</span>
+          <strong>Administrator</strong>
         </div>
       </div>
 
@@ -222,13 +146,7 @@
         </div>
       </main>
 
-      <footer class="admin-footer">
-        <div class="container-fluid px-3 px-lg-4">
-          <span>Copyright 2026 adminHMD. <br> Developed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">Mr. jatin  mishra</a> • Distributed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">mishra developer</a> </span>
-          <span>Professional dashboard template.</span>
-          <span>Profile management page.</span>
-        </div>
-      </footer>
+      <div id="footerSlot"></div>
     </div>
   </div>
 
@@ -236,38 +154,22 @@
   <script src="../assets/js/main.js"></script>
 </body>
 <script>
-    fetch("/header")
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById("header").innerHTML = data;
-        })
-        .catch(error => {
-            console.log("Header load failed:", error);
-        });
+
+function formatDate(value) {
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return "-";
+    return d.toLocaleDateString("en-US", { month: "long", day: "2-digit", year: "numeric" });
+}
+
 async function loadProfile() {
     try {
-        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-
-        if (!token) {
-            window.location.href = "/";
-            return;
-        }
-
-        const response = await fetch("/api/profile", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await window.authorizedFetch("/api/profile");
+        if (!response) return;
 
         const data = await response.json();
 
         if (!data.success) {
-            alert("Session expired. Please login again.");
-            localStorage.removeItem("token");
-            sessionStorage.removeItem("token");
-            window.location.href = "/";
+            window.showToast(data.message || "Failed to load profile.", "error");
             return;
         }
 
@@ -276,6 +178,7 @@ async function loadProfile() {
         // Left Card
         document.getElementById("profileCardName").innerText = user.name || "No Name";
         document.getElementById("profileCardEmail").innerText = user.email || "No Email";
+        document.getElementById("profileMemberSince").innerText = formatDate(user.createdAt);
 
         // Form
         document.getElementById("profileName").value = user.name || "";
@@ -284,6 +187,7 @@ async function loadProfile() {
 
     } catch (error) {
         console.log("Profile load failed:", error);
+        window.showToast("Something went wrong loading your profile.", "error");
     }
 }
 
@@ -291,30 +195,37 @@ async function loadProfile() {
 document.getElementById("profileForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const form = e.target;
+    if (!form.checkValidity()) {
+        form.classList.add("was-validated");
+        return;
+    }
 
-    const name = document.getElementById("profileName").value;
-    const bio = document.getElementById("profileBio").value;
+    const name = document.getElementById("profileName").value.trim();
+    const bio = document.getElementById("profileBio").value.trim();
 
-    const response = await fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            name,
-            bio
-        })
-    });
+    try {
+        const response = await window.authorizedFetch("/api/profile", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, bio })
+        });
+        if (!response) return;
 
-    const data = await response.json();
+        const data = await response.json();
 
-    if (data.success) {
-        alert("Profile updated successfully.");
-        loadProfile();
-    } else {
-        alert(data.message || "Update failed.");
+        if (data.success) {
+            window.showToast(data.message || "Profile updated successfully.", "success");
+            window.adminHMDUser = window.adminHMDUser || {};
+            window.adminHMDUser.name = name;
+            window.applyUserProfileUI(window.adminHMDUser);
+            loadProfile();
+        } else {
+            window.showToast(data.message || "Update failed.", "error");
+        }
+    } catch (error) {
+        console.error("Profile update failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
     }
 });
 
@@ -322,8 +233,7 @@ document.getElementById("profileForm").addEventListener("submit", async function
 loadProfile();
 
 function logout() {
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("token");
+    window.clearAuthToken();
     window.location.href = "/";
 }
 </script>

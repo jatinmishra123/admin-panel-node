@@ -15,85 +15,10 @@
   <div class="admin-shell">
     <div class="sidebar-backdrop" data-sidebar-close></div>
 
-    <aside class="admin-sidebar" id="adminSidebar" aria-label="Main navigation">
-      <div class="sidebar-header">
-           <a class="brand-mark" href="index.html" aria-label="admin panel dashboard">
-    <img src="../assets/images/brand/logo/logo.png" alt="Admin Panel Logo">
-              <span class="brand-copy">
-            <span class="brand-title">Admin Panel</span>
-            <span class="brand-subtitle">jatin mishra </span>
-          </span>
-</a>
-      </div>
-
-      <div id="header"></div>
-
-      <div class="sidebar-user">
-        <img class="avatar-img avatar-md sidebar-user-avatar" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-        <strong>jatin mishra</strong>
-        <small>Active Workspace</small>
-      </div>
-
-      <div class="sidebar-footer">
-        <span class="status-dot"></span>
-        <span class="sidebar-footer-text">System running smoothly</span>
-      </div>
-    </aside>
+    <div id="sidebarSlot"></div>
 
     <div class="admin-main">
-      <nav class="navbar admin-navbar navbar-expand bg-white">
-        <div class="container-fluid px-3 px-lg-4">
-          <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-controls="adminSidebar" aria-expanded="true" aria-label="Toggle sidebar">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <form class="d-none d-md-flex ms-3 flex-grow-1" role="search">
-            <input class="form-control search-input" type="search" placeholder="Search users, orders, reports" aria-label="Search">
-          </form>
-
-          <div class="navbar-actions ms-auto">
-            <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch color theme" title="Switch color theme">
-              <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
-            </button>
-            <div class="dropdown">
-              <button class="icon-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
-                <span class="notification-dot"></span>
-                <i class="bi bi-bell" aria-hidden="true"></i>
-              </button>
-              <div class="dropdown-menu dropdown-menu-end notification-menu">
-                <div class="dropdown-header fw-bold text-body">Notifications</div>
-                <a class="dropdown-item" href="users.html">
-                  <span class="notification-title">New user registered</span>
-                  <span class="notification-time">4 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="charts.html">
-                  <span class="notification-title">Revenue target reached</span>
-                  <span class="notification-time">32 minutes ago</span>
-                </a>
-                <a class="dropdown-item" href="settings.html">
-                  <span class="notification-title">Security review completed</span>
-                  <span class="notification-time">1 hour ago</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="dropdown">
-              <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img class="avatar-img avatar-sm" src="../assets/images/brand/logo/logo.png" alt="jatin mishra">
-                <span class="profile-name d-none d-sm-inline">jatin mishra</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="profile.html">Profile</a></li>
-                <li><a class="dropdown-item" href="settings.html">Account settings</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="login.html">Sign out</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <div id="navbarSlot"></div>
 
       <main class="dashboard-content">
         <div class="container-fluid px-3 px-lg-4 py-4">
@@ -106,7 +31,7 @@
                 <p class="text-muted mb-0">Create a new Products .</p>
               </div>
             </div>
-            <div class="heading-actions"><a class="btn btn-outline-secondary btn-sm" href="users.html"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Dashboard</a></div>
+            <div class="heading-actions"><a class="btn btn-outline-secondary btn-sm" href="/users"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Dashboard</a></div>
           </div>
 
           <section class="row g-4">
@@ -114,7 +39,7 @@
   <!-- Product Form -->
   <div class="col-12 col-xl-8">
 
-    <form class="panel needs-validation" novalidate>
+    <form class="panel needs-validation" novalidate id="productForm">
 
       <!-- Header -->
       <div class="panel-header">
@@ -253,8 +178,7 @@
 
           <input class="form-control"
                  id="productImage"
-                 type="file"
-                 required>
+                 type="file">
 
           <div class="invalid-feedback">
             Product image is required.
@@ -316,7 +240,7 @@
       <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
 
         <a class="btn btn-outline-secondary"
-           href="products.html">
+           href="/users">
           Cancel
         </a>
 
@@ -398,20 +322,240 @@
   </div>
 
 </section>
+
+<section class="panel mt-3">
+  <div class="panel-header">
+    <div>
+      <h2 class="h5 mb-1 section-title"><i class="bi bi-grid" aria-hidden="true"></i><span>All Products</span></h2>
+      <p class="text-muted mb-0">Every product added to the catalog.</p>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table align-middle mb-0" id="productsTable" data-searchable-table>
+      <thead><tr><th scope="col">Product</th><th scope="col">Category</th><th scope="col">Type</th><th scope="col">Added</th><th scope="col" class="text-end">Action</th></tr></thead>
+      <tbody id="productsTableBody">
+        <tr><td colspan="5" class="text-muted small">Loading products...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
         </div>
       </main>
 
-      <footer class="admin-footer">
-        <div class="container-fluid px-3 px-lg-4">
-          <span>Copyright 2026 admin panel. <br> Developed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">Mr. jatin  mishra</a> • Distributed by <a target="_blank" class="fw-bold text-success" href="https://dainty-jelly-a69643.netlify.app/">mishra developer</a> </span>
-          <span>Professional dashboard template.</span>
-          <span>Validated user creation form.</span>
-        </div>
-      </footer>
+      <div id="footerSlot"></div>
     </div>
   </div>
 
   <script src="../assets/js/bootstrap.bundle.min.js"></script>
   <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    var categorySelect = document.getElementById("categoryName");
+    var subcategorySelect = document.getElementById("subcategoryName");
+    var fallbackImage = "../assets/images/brand/logo/logo.png";
+    var categoryNames = [];
+    var subcategoryNames = [];
+    var productTypes = ["featured", "trending", "popular", "new-arrival"];
+
+    async function loadOptions(url, select, placeholder, targetArray) {
+      var response = await window.authorizedFetch(url);
+      if (!response) return;
+      var result = await response.json();
+      if (!result.success || !result.data.length) return;
+
+      var names = result.data.map(function (item) { return item.name; });
+      if (targetArray) {
+        targetArray.length = 0;
+        Array.prototype.push.apply(targetArray, names);
+      }
+
+      if (!select) return;
+      var currentValue = select.value;
+      select.innerHTML = '<option value="">' + placeholder + '</option>';
+      names.forEach(function (itemName) {
+        var option = document.createElement("option");
+        option.value = itemName;
+        option.textContent = itemName;
+        select.appendChild(option);
+      });
+      select.value = currentValue;
+    }
+
+    function formatDate(value) {
+      var d = new Date(value);
+      if (isNaN(d.getTime())) return "-";
+      return d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+    }
+
+    function renderProducts(products) {
+      var body = document.getElementById("productsTableBody");
+      if (!body) return;
+
+      if (!products || !products.length) {
+        body.innerHTML = '<tr><td colspan="5" class="text-muted small">No products yet. Create one above.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = "";
+      products.forEach(function (product) {
+        var row = document.createElement("tr");
+        row.innerHTML =
+          '<td><div class="d-flex align-items-center gap-2"><img class="avatar-img avatar-sm" alt=""><div><p class="fw-semibold mb-0"></p><p class="text-muted small mb-0"></p></div></div></td>' +
+          '<td class="category-cell"></td>' +
+          '<td><span class="badge text-bg-secondary type-cell"></span></td>' +
+          '<td class="added-cell"></td>' +
+          '<td class="text-end"><div class="d-flex gap-2 justify-content-end">' +
+            '<button type="button" class="btn btn-light btn-sm edit-product-btn"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
+            '<button type="button" class="btn btn-light btn-sm text-danger delete-product-btn"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>' +
+          '</div></td>';
+
+        row.querySelector("img").src = product.image || fallbackImage;
+        row.querySelector("img").alt = product.name;
+        row.querySelector(".fw-semibold").textContent = product.name;
+        row.querySelector(".text-muted").textContent = product.text || "";
+        row.querySelector(".category-cell").textContent = product.categoryName + " / " + product.subcategoryName;
+        row.querySelector(".type-cell").textContent = product.type || "-";
+        row.querySelector(".added-cell").textContent = formatDate(product.createdAt);
+        row.querySelector(".edit-product-btn").addEventListener("click", function () {
+          editProduct(product);
+        });
+        row.querySelector(".delete-product-btn").addEventListener("click", function () {
+          deleteProduct(product._id, product.name);
+        });
+
+        body.appendChild(row);
+      });
+    }
+
+    async function editProduct(product) {
+      var updated = await window.editDialog({
+        title: "Edit Product",
+        fields: [
+          { key: "categoryName", label: "Category", type: "select", options: categoryNames },
+          { key: "subcategoryName", label: "Sub Category", type: "select", options: subcategoryNames },
+          { key: "name", label: "Product Name", type: "text", required: true },
+          { key: "text", label: "Product Text", type: "text" },
+          { key: "type", label: "Type", type: "select", options: productTypes },
+          { key: "notes", label: "Notes", type: "textarea" },
+          { key: "image", label: "Replace Image (optional)", type: "file" }
+        ],
+        values: {
+          categoryName: product.categoryName,
+          subcategoryName: product.subcategoryName,
+          name: product.name,
+          text: product.text,
+          type: product.type,
+          notes: product.notes
+        }
+      });
+
+      if (!updated) return;
+
+      var formData = new FormData();
+      formData.append("categoryName", updated.categoryName);
+      formData.append("subcategoryName", updated.subcategoryName);
+      formData.append("name", updated.name);
+      formData.append("text", updated.text);
+      formData.append("type", updated.type);
+      formData.append("notes", updated.notes);
+      if (updated.image) formData.append("image", updated.image);
+
+      try {
+        var response = await window.authorizedFetch("/api/products/" + product._id, {
+          method: "PUT",
+          body: formData
+        });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Product updated.", "success");
+          loadProducts();
+        } else {
+          window.showToast(result.message || "Failed to update product.", "error");
+        }
+      } catch (error) {
+        console.error("Update product failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteProduct(id, name) {
+      var confirmed = await window.confirmDialog('Delete product "' + name + '"? This cannot be undone.', { title: "Delete Product" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/products/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Product deleted.", "success");
+          loadProducts();
+        } else {
+          window.showToast(result.message || "Failed to delete product.", "error");
+        }
+      } catch (error) {
+        console.error("Delete product failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadProducts() {
+      var response = await window.authorizedFetch("/api/products");
+      if (!response) return;
+      var result = await response.json();
+      if (result.success) renderProducts(result.data);
+    }
+
+    var form = document.getElementById("productForm");
+    if (form) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        var formData = new FormData();
+        formData.append("categoryName", categorySelect.value);
+        formData.append("subcategoryName", subcategorySelect.value);
+        formData.append("name", document.getElementById("productsName").value.trim());
+        formData.append("text", document.getElementById("productsText").value.trim());
+        formData.append("type", document.getElementById("type").value);
+        formData.append("notes", document.getElementById("notes").value.trim());
+
+        var imageFile = document.getElementById("productImage").files[0];
+        if (imageFile) formData.append("image", imageFile);
+
+        try {
+          var response = await window.authorizedFetch("/api/products", {
+            method: "POST",
+            body: formData
+          });
+          if (!response) return;
+
+          var result = await response.json();
+
+          if (result.success) {
+            window.showToast(result.message || "Product created.", "success");
+            form.reset();
+            form.classList.remove("was-validated");
+            loadProducts();
+          } else {
+            window.showToast(result.message || "Failed to create product.", "error");
+          }
+        } catch (error) {
+          console.error("Create product failed:", error);
+          window.showToast("Something went wrong. Please try again.", "error");
+        }
+      });
+    }
+
+    loadOptions("/api/categories", categorySelect, "Select Category", categoryNames);
+    loadOptions("/api/subcategories", subcategorySelect, "Select Sub Category", subcategoryNames);
+    loadProducts();
+  })();
+  </script>
 </body>
 </html>
