@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 const { ObjectId } = require("mongodb");
 const path = require("path");
 const fs = require("fs");
@@ -67,6 +68,7 @@ function uploadedImageUrl(req) {
 }
 
 // ================= MIDDLEWARE =================
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -437,7 +439,8 @@ app.post("/api/categories", verifyToken, upload.single("image"), async (req, res
     }
 });
 
-app.get("/api/categories", verifyToken, async (req, res) => {
+// Public: storefront needs to browse categories without logging in.
+app.get("/api/categories", async (req, res) => {
     const db = getDB();
     try {
         const categories = await db.collection("categories").find({}).sort({ createdAt: -1 }).toArray();
@@ -504,7 +507,8 @@ app.post("/api/subcategories", verifyToken, upload.single("image"), async (req, 
     }
 });
 
-app.get("/api/subcategories", verifyToken, async (req, res) => {
+// Public: storefront needs to browse subcategories without logging in.
+app.get("/api/subcategories", async (req, res) => {
     const db = getDB();
     try {
         const subcategories = await db.collection("subcategories").find({}).sort({ createdAt: -1 }).toArray();
@@ -551,7 +555,7 @@ app.delete("/api/subcategories/:id", verifyToken, async (req, res) => {
 app.post("/api/products", verifyToken, upload.single("image"), async (req, res) => {
     const db = getDB();
     try {
-        const { categoryName, subcategoryName, name, text, type, notes } = req.body;
+        const { categoryName, subcategoryName, name, text, type, notes, price } = req.body;
 
         if (!categoryName || !subcategoryName || !name) {
             return res.status(400).json({ success: false, message: "Category, subcategory and product name are required." });
@@ -560,7 +564,8 @@ app.post("/api/products", verifyToken, upload.single("image"), async (req, res) 
         const image = uploadedImageUrl(req);
 
         const result = await db.collection("products").insertOne({
-            categoryName, subcategoryName, name, text: text || "", type: type || "", notes: notes || "", image,
+            categoryName, subcategoryName, name, text: text || "", type: type || "", notes: notes || "",
+            price: Number(price) || 0, image,
             createdAt: new Date()
         });
 
@@ -571,7 +576,8 @@ app.post("/api/products", verifyToken, upload.single("image"), async (req, res) 
     }
 });
 
-app.get("/api/products", verifyToken, async (req, res) => {
+// Public: anyone (storefront) can browse products, no login required.
+app.get("/api/products", async (req, res) => {
     const db = getDB();
     try {
         const products = await db.collection("products").find({}).sort({ createdAt: -1 }).toArray();
@@ -584,13 +590,13 @@ app.get("/api/products", verifyToken, async (req, res) => {
 app.put("/api/products/:id", verifyToken, upload.single("image"), async (req, res) => {
     const db = getDB();
     try {
-        const { categoryName, subcategoryName, name, text, type, notes } = req.body;
+        const { categoryName, subcategoryName, name, text, type, notes, price } = req.body;
 
         if (!categoryName || !subcategoryName || !name) {
             return res.status(400).json({ success: false, message: "Category, subcategory and product name are required." });
         }
 
-        const update = { categoryName, subcategoryName, name, text: text || "", type: type || "", notes: notes || "" };
+        const update = { categoryName, subcategoryName, name, text: text || "", type: type || "", notes: notes || "", price: Number(price) || 0 };
         if (req.file) {
             update.image = uploadedImageUrl(req);
         }
@@ -615,7 +621,8 @@ app.delete("/api/products/:id", verifyToken, async (req, res) => {
 
 // ================= ORDERS =================
 
-app.post("/api/orders", verifyToken, async (req, res) => {
+// Public: customers place orders without an admin login (this is checkout).
+app.post("/api/orders", async (req, res) => {
     const db = getDB();
     try {
         const { customerName, customerEmail, amount, status } = req.body;
@@ -696,7 +703,8 @@ app.post("/api/faqs", verifyToken, async (req, res) => {
     }
 });
 
-app.get("/api/faqs", verifyToken, async (req, res) => {
+// Public: storefront FAQ page.
+app.get("/api/faqs", async (req, res) => {
     const db = getDB();
     try {
         const faqs = await db.collection("faqs").find({}).sort({ createdAt: -1 }).toArray();
@@ -825,7 +833,8 @@ app.post("/api/banners", verifyToken, upload.single("image"), async (req, res) =
     }
 });
 
-app.get("/api/banners", verifyToken, async (req, res) => {
+// Public: storefront homepage banners.
+app.get("/api/banners", async (req, res) => {
     const db = getDB();
     try {
         const banners = await db.collection("banners").find({}).sort({ createdAt: -1 }).toArray();

@@ -170,6 +170,25 @@
           </div>
         </div>
 
+        <!-- Product Price -->
+        <div class="col-md-6">
+          <label class="form-label" for="productPrice">
+            Price ($)
+          </label>
+
+          <input class="form-control"
+                 id="productPrice"
+                 type="number"
+                 min="0"
+                 step="0.01"
+                 placeholder="0.00"
+                 required>
+
+          <div class="invalid-feedback">
+            Price is required.
+          </div>
+        </div>
+
         <!-- Product Image -->
         <div class="col-md-6">
           <label class="form-label" for="productImage">
@@ -332,9 +351,9 @@
   </div>
   <div class="table-responsive">
     <table class="table align-middle mb-0" id="productsTable" data-searchable-table>
-      <thead><tr><th scope="col">Product</th><th scope="col">Category</th><th scope="col">Type</th><th scope="col">Added</th><th scope="col" class="text-end">Action</th></tr></thead>
+      <thead><tr><th scope="col">Product</th><th scope="col">Category</th><th scope="col">Price</th><th scope="col">Type</th><th scope="col">Added</th><th scope="col" class="text-end">Action</th></tr></thead>
       <tbody id="productsTableBody">
-        <tr><td colspan="5" class="text-muted small">Loading products...</td></tr>
+        <tr><td colspan="6" class="text-muted small">Loading products...</td></tr>
       </tbody>
     </table>
   </div>
@@ -392,7 +411,7 @@
       if (!body) return;
 
       if (!products || !products.length) {
-        body.innerHTML = '<tr><td colspan="5" class="text-muted small">No products yet. Create one above.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" class="text-muted small">No products yet. Create one above.</td></tr>';
         return;
       }
 
@@ -402,6 +421,7 @@
         row.innerHTML =
           '<td><div class="d-flex align-items-center gap-2"><img class="avatar-img avatar-sm" alt=""><div><p class="fw-semibold mb-0"></p><p class="text-muted small mb-0"></p></div></div></td>' +
           '<td class="category-cell"></td>' +
+          '<td class="price-cell fw-semibold"></td>' +
           '<td><span class="badge text-bg-secondary type-cell"></span></td>' +
           '<td class="added-cell"></td>' +
           '<td class="text-end"><div class="d-flex gap-2 justify-content-end">' +
@@ -414,6 +434,7 @@
         row.querySelector(".fw-semibold").textContent = product.name;
         row.querySelector(".text-muted").textContent = product.text || "";
         row.querySelector(".category-cell").textContent = product.categoryName + " / " + product.subcategoryName;
+        row.querySelector(".price-cell").textContent = "$" + Number(product.price || 0).toFixed(2);
         row.querySelector(".type-cell").textContent = product.type || "-";
         row.querySelector(".added-cell").textContent = formatDate(product.createdAt);
         row.querySelector(".edit-product-btn").addEventListener("click", function () {
@@ -435,6 +456,7 @@
           { key: "subcategoryName", label: "Sub Category", type: "select", options: subcategoryNames },
           { key: "name", label: "Product Name", type: "text", required: true },
           { key: "text", label: "Product Text", type: "text" },
+          { key: "price", label: "Price ($)", type: "number", required: true },
           { key: "type", label: "Type", type: "select", options: productTypes },
           { key: "notes", label: "Notes", type: "textarea" },
           { key: "image", label: "Replace Image (optional)", type: "file" }
@@ -444,6 +466,7 @@
           subcategoryName: product.subcategoryName,
           name: product.name,
           text: product.text,
+          price: product.price,
           type: product.type,
           notes: product.notes
         }
@@ -456,6 +479,7 @@
       formData.append("subcategoryName", updated.subcategoryName);
       formData.append("name", updated.name);
       formData.append("text", updated.text);
+      formData.append("price", updated.price);
       formData.append("type", updated.type);
       formData.append("notes", updated.notes);
       if (updated.image) formData.append("image", updated.image);
@@ -522,6 +546,7 @@
         formData.append("subcategoryName", subcategorySelect.value);
         formData.append("name", document.getElementById("productsName").value.trim());
         formData.append("text", document.getElementById("productsText").value.trim());
+        formData.append("price", document.getElementById("productPrice").value);
         formData.append("type", document.getElementById("type").value);
         formData.append("notes", document.getElementById("notes").value.trim());
 
