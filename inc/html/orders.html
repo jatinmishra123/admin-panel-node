@@ -179,7 +179,7 @@
       orders.forEach(function (order) {
         var row = document.createElement("tr");
         row.innerHTML =
-          '<td><p class="fw-semibold mb-0"></p><p class="text-muted small mb-0"></p></td>' +
+          '<td><p class="fw-semibold mb-0"></p><p class="text-muted small mb-0"></p><p class="text-muted small mb-0 items-cell"></p></td>' +
           '<td class="amount-cell"></td>' +
           '<td><span class="badge text-bg-' + (statusVariant[order.status] || "secondary") + ' status-cell"></span></td>' +
           '<td class="date-cell"></td>' +
@@ -190,6 +190,11 @@
 
         row.querySelector(".fw-semibold").textContent = order.customerName;
         row.querySelector(".text-muted").textContent = order.customerEmail || "";
+        if (order.items && order.items.length) {
+          var itemsEl = row.querySelector(".items-cell");
+          itemsEl.textContent = order.items.length + " item" + (order.items.length === 1 ? "" : "s");
+          itemsEl.title = order.items.map(function (i) { return i.quantity + "x " + i.name; }).join(", ");
+        }
         row.querySelector(".amount-cell").textContent = formatCurrency(order.amount);
         row.querySelector(".status-cell").textContent = order.status;
         row.querySelector(".date-cell").textContent = formatDate(order.createdAt);

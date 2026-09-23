@@ -625,7 +625,7 @@ app.delete("/api/products/:id", verifyToken, async (req, res) => {
 app.post("/api/orders", async (req, res) => {
     const db = getDB();
     try {
-        const { customerName, customerEmail, amount, status } = req.body;
+        const { customerName, customerEmail, amount, status, items } = req.body;
 
         if (!customerName || amount === undefined) {
             return res.status(400).json({ success: false, message: "Customer name and amount are required." });
@@ -635,6 +635,12 @@ app.post("/api/orders", async (req, res) => {
             customerName, customerEmail: customerEmail || "",
             amount: Number(amount) || 0,
             status: status || "pending",
+            items: Array.isArray(items) ? items.map((item) => ({
+                productId: item.productId || null,
+                name: item.name || "",
+                price: Number(item.price) || 0,
+                quantity: Number(item.quantity) || 1
+            })) : [],
             createdAt: new Date()
         });
 
