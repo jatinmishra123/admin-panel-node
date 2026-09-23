@@ -66,8 +66,14 @@ const upload = multer({
 
 // Returns the URL to store in the DB for an uploaded file, regardless of storage backend.
 function uploadedImageUrl(req) {
-    if (!req.file) return null;
-    return USE_CLOUDINARY ? req.file.path : "/assets/uploads/" + req.file.filename;
+    if (req.file) {
+        return USE_CLOUDINARY ? req.file.path : "/assets/uploads/" + req.file.filename;
+    }
+    // Fall back to a plain image URL if one was provided instead of an uploaded file.
+    if (req.body && req.body.imageUrl) {
+        return req.body.imageUrl;
+    }
+    return null;
 }
 
 // ================= MIDDLEWARE =================
