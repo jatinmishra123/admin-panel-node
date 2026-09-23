@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="admin panel professional admin dashboard template">
+  <title>FAQ | admin panel</title>
+
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendors/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    <div id="sidebarSlot"></div>
+
+    <div class="admin-main">
+      <div id="navbarSlot"></div>
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-question-circle" aria-hidden="true"></i></span>
+              <div>
+                <p class="eyebrow mb-1">Content</p>
+                <h1 class="h3 mb-1">FAQ</h1>
+                <p class="text-muted mb-0">Manage frequently asked questions shown to customers.</p>
+              </div>
+            </div>
+          </div>
+
+          <section class="row g-3 mt-1">
+            <div class="col-12 col-xl-5">
+              <form class="panel needs-validation" novalidate id="faqForm">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-plus-circle" aria-hidden="true"></i><span>New FAQ</span></h2>
+                    <p class="text-muted mb-0">Add a question and its answer.</p>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label" for="faqQuestion">Question</label>
+                    <input class="form-control" id="faqQuestion" type="text" placeholder="Enter the question..." required>
+                    <div class="invalid-feedback">Question is required.</div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="faqAnswer">Answer</label>
+                    <textarea class="form-control" id="faqAnswer" rows="4" placeholder="Enter the answer..." required></textarea>
+                    <div class="invalid-feedback">Answer is required.</div>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle" aria-hidden="true"></i> Add FAQ</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="col-12 col-xl-7">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-list-check" aria-hidden="true"></i><span>All FAQs</span></h2>
+                    <p class="text-muted mb-0">Every question currently published.</p>
+                  </div>
+                </div>
+                <div class="accordion" id="faqAccordion">
+                  <p class="text-muted small mb-0" id="faqEmptyState">Loading FAQs...</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <div id="footerSlot"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    var accordion = document.getElementById("faqAccordion");
+
+    function renderFaqs(faqs) {
+      if (!faqs.length) {
+        accordion.innerHTML = '<p class="text-muted small mb-0">No FAQs yet. Add one to see it here.</p>';
+        return;
+      }
+
+      accordion.innerHTML = "";
+      faqs.forEach(function (faq, index) {
+        var itemId = "faqItem" + index;
+        var item = document.createElement("div");
+        item.className = "accordion-item";
+        item.innerHTML =
+          '<h2 class="accordion-header">' +
+            '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#' + itemId + '">' +
+              '<span class="flex-grow-1 question-text"></span>' +
+            '</button>' +
+          '</h2>' +
+          '<div id="' + itemId + '" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">' +
+            '<div class="accordion-body">' +
+              '<p class="answer-text mb-3"></p>' +
+              '<div class="d-flex gap-2">' +
+                '<button type="button" class="btn btn-light btn-sm edit-faq-btn"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
+                '<button type="button" class="btn btn-light btn-sm text-danger delete-faq-btn"><i class="bi bi-trash" aria-hidden="true"></i> Delete</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+
+        item.querySelector(".question-text").textContent = faq.question;
+        item.querySelector(".answer-text").textContent = faq.answer;
+        item.querySelector(".edit-faq-btn").addEventListener("click", function () { editFaq(faq); });
+        item.querySelector(".delete-faq-btn").addEventListener("click", function () { deleteFaq(faq._id, faq.question); });
+
+        accordion.appendChild(item);
+      });
+    }
+
+    async function editFaq(faq) {
+      var updated = await window.editDialog({
+        title: "Edit FAQ",
+        fields: [
+          { key: "question", label: "Question", type: "text", required: true },
+          { key: "answer", label: "Answer", type: "textarea", required: true }
+        ],
+        values: { question: faq.question, answer: faq.answer }
+      });
+
+      if (!updated) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/faqs/" + faq._id, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updated)
+        });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "FAQ updated.", "success");
+          loadFaqs();
+        } else {
+          window.showToast(result.message || "Failed to update FAQ.", "error");
+        }
+      } catch (error) {
+        console.error("Update FAQ failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteFaq(id, question) {
+      var confirmed = await window.confirmDialog('Delete FAQ "' + question + '"? This cannot be undone.', { title: "Delete FAQ" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/faqs/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "FAQ deleted.", "success");
+          loadFaqs();
+        } else {
+          window.showToast(result.message || "Failed to delete FAQ.", "error");
+        }
+      } catch (error) {
+        console.error("Delete FAQ failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadFaqs() {
+      var response = await window.authorizedFetch("/api/faqs");
+      if (!response) return;
+      var result = await response.json();
+      if (result.success) renderFaqs(result.data);
+    }
+
+    var form = document.getElementById("faqForm");
+    if (form) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        var payload = {
+          question: document.getElementById("faqQuestion").value.trim(),
+          answer: document.getElementById("faqAnswer").value.trim()
+        };
+
+        try {
+          var response = await window.authorizedFetch("/api/faqs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (!response) return;
+
+          var result = await response.json();
+
+          if (result.success) {
+            window.showToast(result.message || "FAQ created.", "success");
+            form.reset();
+            form.classList.remove("was-validated");
+            loadFaqs();
+          } else {
+            window.showToast(result.message || "Failed to create FAQ.", "error");
+          }
+        } catch (error) {
+          console.error("Create FAQ failed:", error);
+          window.showToast("Something went wrong. Please try again.", "error");
+        }
+      });
+    }
+
+    loadFaqs();
+  })();
+  </script>
+</body>
+</html>

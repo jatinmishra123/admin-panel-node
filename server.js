@@ -1,35 +1,70 @@
+require("dotenv").config();
+
 const express = require("express");
 const { ObjectId } = require("mongodb");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { connectDB, getDB } = require("./config/db");
 const app = express();
 
 // ================= CONFIG =================
-const PORT = 3000;
-const JWT_SECRET = "your_super_secure_secret_key_change_this";
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || "your_super_secure_secret_key_change_this";
 
-// ================= IMAGE UPLOAD (CATEGORY / SUBCATEGORY / PRODUCT) =================
-const UPLOAD_DIR = path.join(__dirname, "inc/assets/uploads");
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+// ================= IMAGE UPLOAD (CATEGORY / SUBCATEGORY / PRODUCT / BANNERS / TESTIMONIALS) =================
+// Uses Cloudinary when CLOUDINARY_* env vars are set (persists across redeploys).
+// Falls back to local disk storage for local development (files are lost on redeploy on most hosts).
+const USE_CLOUDINARY = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
 
-const upload = multer({
-    storage: multer.diskStorage({
+let uploadStorage;
+
+if (USE_CLOUDINARY) {
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+    });
+
+    uploadStorage = new CloudinaryStorage({
+        cloudinary,
+        params: { folder: "admin-panel-uploads" }
+    });
+
+    console.log("Image uploads: Cloudinary (persistent)");
+} else {
+    const UPLOAD_DIR = path.join(__dirname, "inc/assets/uploads");
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+
+    uploadStorage = multer.diskStorage({
         destination: (req, file, cb) => cb(null, UPLOAD_DIR),
         filename: (req, file, cb) => {
             const safeExt = path.extname(file.originalname).toLowerCase();
             cb(null, Date.now() + "-" + Math.round(Math.random() * 1e9) + safeExt);
         }
-    }),
+    });
+
+    console.log("Image uploads: local disk (set CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET for persistent storage)");
+}
+
+const upload = multer({
+    storage: uploadStorage,
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (req, file, cb) => {
         const allowed = [".jpg", ".jpeg", ".png", ".webp", ".gif"];
         cb(null, allowed.includes(path.extname(file.originalname).toLowerCase()));
     }
 });
+
+// Returns the URL to store in the DB for an uploaded file, regardless of storage backend.
+function uploadedImageUrl(req) {
+    if (!req.file) return null;
+    return USE_CLOUDINARY ? req.file.path : "/assets/uploads/" + req.file.filename;
+}
 
 // ================= MIDDLEWARE =================
 app.use(express.json());
@@ -138,6 +173,18 @@ app.get("/product",(req,res)=>{
 });
 app.get("/orders",(req,res)=>{
     res.sendFile(path.join(__dirname, "inc", "html","orders.html"));
+});
+app.get("/faq",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html","faq.html"));
+});
+app.get("/coupons",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html","coupons.html"));
+});
+app.get("/banners",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html","banners.html"));
+});
+app.get("/testimonials",(req,res)=>{
+    res.sendFile(path.join(__dirname, "inc", "html","testimonials.html"));
 });
 // ================= AUTH ROUTES =================
 
@@ -376,7 +423,7 @@ app.post("/api/categories", verifyToken, upload.single("image"), async (req, res
             return res.status(400).json({ success: false, message: "Category name is required." });
         }
 
-        const image = req.file ? "/assets/uploads/" + req.file.filename : null;
+        const image = uploadedImageUrl(req);
 
         const result = await db.collection("categories").insertOne({
             name, text: text || "", type: type || "", notes: notes || "", image,
@@ -411,7 +458,7 @@ app.put("/api/categories/:id", verifyToken, upload.single("image"), async (req, 
 
         const update = { name, text: text || "", type: type || "", notes: notes || "" };
         if (req.file) {
-            update.image = "/assets/uploads/" + req.file.filename;
+            update.image = uploadedImageUrl(req);
         }
 
         await db.collection("categories").updateOne({ _id: new ObjectId(req.params.id) }, { $set: update });
@@ -443,7 +490,7 @@ app.post("/api/subcategories", verifyToken, upload.single("image"), async (req, 
             return res.status(400).json({ success: false, message: "Category and subcategory name are required." });
         }
 
-        const image = req.file ? "/assets/uploads/" + req.file.filename : null;
+        const image = uploadedImageUrl(req);
 
         const result = await db.collection("subcategories").insertOne({
             categoryName, name, text: text || "", type: type || "", notes: notes || "", image,
@@ -478,7 +525,7 @@ app.put("/api/subcategories/:id", verifyToken, upload.single("image"), async (re
 
         const update = { categoryName, name, text: text || "", type: type || "", notes: notes || "" };
         if (req.file) {
-            update.image = "/assets/uploads/" + req.file.filename;
+            update.image = uploadedImageUrl(req);
         }
 
         await db.collection("subcategories").updateOne({ _id: new ObjectId(req.params.id) }, { $set: update });
@@ -510,7 +557,7 @@ app.post("/api/products", verifyToken, upload.single("image"), async (req, res) 
             return res.status(400).json({ success: false, message: "Category, subcategory and product name are required." });
         }
 
-        const image = req.file ? "/assets/uploads/" + req.file.filename : null;
+        const image = uploadedImageUrl(req);
 
         const result = await db.collection("products").insertOne({
             categoryName, subcategoryName, name, text: text || "", type: type || "", notes: notes || "", image,
@@ -545,7 +592,7 @@ app.put("/api/products/:id", verifyToken, upload.single("image"), async (req, re
 
         const update = { categoryName, subcategoryName, name, text: text || "", type: type || "", notes: notes || "" };
         if (req.file) {
-            update.image = "/assets/uploads/" + req.file.filename;
+            update.image = uploadedImageUrl(req);
         }
 
         await db.collection("products").updateOne({ _id: new ObjectId(req.params.id) }, { $set: update });
@@ -628,6 +675,258 @@ app.delete("/api/orders/:id", verifyToken, async (req, res) => {
         return res.status(200).json({ success: true, message: "Order deleted." });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Failed to delete order.", error: error.message });
+    }
+});
+
+// ================= FAQS =================
+
+app.post("/api/faqs", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const { question, answer } = req.body;
+
+        if (!question || !answer) {
+            return res.status(400).json({ success: false, message: "Question and answer are required." });
+        }
+
+        const result = await db.collection("faqs").insertOne({ question, answer, createdAt: new Date() });
+        return res.status(201).json({ success: true, message: "FAQ created.", id: result.insertedId });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to create FAQ.", error: error.message });
+    }
+});
+
+app.get("/api/faqs", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const faqs = await db.collection("faqs").find({}).sort({ createdAt: -1 }).toArray();
+        return res.status(200).json({ success: true, data: faqs });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch FAQs.", error: error.message });
+    }
+});
+
+app.put("/api/faqs/:id", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const { question, answer } = req.body;
+
+        if (!question || !answer) {
+            return res.status(400).json({ success: false, message: "Question and answer are required." });
+        }
+
+        await db.collection("faqs").updateOne({ _id: new ObjectId(req.params.id) }, { $set: { question, answer } });
+        return res.status(200).json({ success: true, message: "FAQ updated." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to update FAQ.", error: error.message });
+    }
+});
+
+app.delete("/api/faqs/:id", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        await db.collection("faqs").deleteOne({ _id: new ObjectId(req.params.id) });
+        return res.status(200).json({ success: true, message: "FAQ deleted." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to delete FAQ.", error: error.message });
+    }
+});
+
+// ================= COUPONS =================
+
+app.post("/api/coupons", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const { code, discountPercent, expiryDate, active } = req.body;
+
+        if (!code || discountPercent === undefined) {
+            return res.status(400).json({ success: false, message: "Coupon code and discount are required." });
+        }
+
+        const existing = await db.collection("coupons").findOne({ code: code.toUpperCase() });
+        if (existing) {
+            return res.status(409).json({ success: false, message: "Coupon code already exists." });
+        }
+
+        const result = await db.collection("coupons").insertOne({
+            code: code.toUpperCase(),
+            discountPercent: Number(discountPercent) || 0,
+            expiryDate: expiryDate || null,
+            active: active !== false,
+            createdAt: new Date()
+        });
+
+        return res.status(201).json({ success: true, message: "Coupon created.", id: result.insertedId });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to create coupon.", error: error.message });
+    }
+});
+
+app.get("/api/coupons", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const coupons = await db.collection("coupons").find({}).sort({ createdAt: -1 }).toArray();
+        return res.status(200).json({ success: true, data: coupons });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch coupons.", error: error.message });
+    }
+});
+
+app.put("/api/coupons/:id", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const { code, discountPercent, expiryDate, active } = req.body;
+
+        if (!code || discountPercent === undefined) {
+            return res.status(400).json({ success: false, message: "Coupon code and discount are required." });
+        }
+
+        await db.collection("coupons").updateOne(
+            { _id: new ObjectId(req.params.id) },
+            { $set: { code: code.toUpperCase(), discountPercent: Number(discountPercent) || 0, expiryDate: expiryDate || null, active: active !== false } }
+        );
+
+        return res.status(200).json({ success: true, message: "Coupon updated." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to update coupon.", error: error.message });
+    }
+});
+
+app.delete("/api/coupons/:id", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        await db.collection("coupons").deleteOne({ _id: new ObjectId(req.params.id) });
+        return res.status(200).json({ success: true, message: "Coupon deleted." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to delete coupon.", error: error.message });
+    }
+});
+
+// ================= BANNERS =================
+
+app.post("/api/banners", verifyToken, upload.single("image"), async (req, res) => {
+    const db = getDB();
+    try {
+        const { title, link } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ success: false, message: "Banner title is required." });
+        }
+
+        const image = uploadedImageUrl(req);
+
+        const result = await db.collection("banners").insertOne({
+            title, link: link || "", image, createdAt: new Date()
+        });
+
+        return res.status(201).json({ success: true, message: "Banner created.", id: result.insertedId });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to create banner.", error: error.message });
+    }
+});
+
+app.get("/api/banners", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const banners = await db.collection("banners").find({}).sort({ createdAt: -1 }).toArray();
+        return res.status(200).json({ success: true, data: banners });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch banners.", error: error.message });
+    }
+});
+
+app.put("/api/banners/:id", verifyToken, upload.single("image"), async (req, res) => {
+    const db = getDB();
+    try {
+        const { title, link } = req.body;
+
+        if (!title) {
+            return res.status(400).json({ success: false, message: "Banner title is required." });
+        }
+
+        const update = { title, link: link || "" };
+        if (req.file) {
+            update.image = uploadedImageUrl(req);
+        }
+
+        await db.collection("banners").updateOne({ _id: new ObjectId(req.params.id) }, { $set: update });
+        return res.status(200).json({ success: true, message: "Banner updated." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to update banner.", error: error.message });
+    }
+});
+
+app.delete("/api/banners/:id", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        await db.collection("banners").deleteOne({ _id: new ObjectId(req.params.id) });
+        return res.status(200).json({ success: true, message: "Banner deleted." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to delete banner.", error: error.message });
+    }
+});
+
+// ================= TESTIMONIALS =================
+
+app.post("/api/testimonials", verifyToken, upload.single("image"), async (req, res) => {
+    const db = getDB();
+    try {
+        const { customerName, rating, reviewText } = req.body;
+
+        if (!customerName || !reviewText) {
+            return res.status(400).json({ success: false, message: "Customer name and review text are required." });
+        }
+
+        const image = uploadedImageUrl(req);
+
+        const result = await db.collection("testimonials").insertOne({
+            customerName, rating: Number(rating) || 5, reviewText, image, createdAt: new Date()
+        });
+
+        return res.status(201).json({ success: true, message: "Testimonial created.", id: result.insertedId });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to create testimonial.", error: error.message });
+    }
+});
+
+app.get("/api/testimonials", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const testimonials = await db.collection("testimonials").find({}).sort({ createdAt: -1 }).toArray();
+        return res.status(200).json({ success: true, data: testimonials });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch testimonials.", error: error.message });
+    }
+});
+
+app.put("/api/testimonials/:id", verifyToken, upload.single("image"), async (req, res) => {
+    const db = getDB();
+    try {
+        const { customerName, rating, reviewText } = req.body;
+
+        if (!customerName || !reviewText) {
+            return res.status(400).json({ success: false, message: "Customer name and review text are required." });
+        }
+
+        const update = { customerName, rating: Number(rating) || 5, reviewText };
+        if (req.file) {
+            update.image = uploadedImageUrl(req);
+        }
+
+        await db.collection("testimonials").updateOne({ _id: new ObjectId(req.params.id) }, { $set: update });
+        return res.status(200).json({ success: true, message: "Testimonial updated." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to update testimonial.", error: error.message });
+    }
+});
+
+app.delete("/api/testimonials/:id", verifyToken, async (req, res) => {
+    const db = getDB();
+    try {
+        await db.collection("testimonials").deleteOne({ _id: new ObjectId(req.params.id) });
+        return res.status(200).json({ success: true, message: "Testimonial deleted." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to delete testimonial.", error: error.message });
     }
 });
 

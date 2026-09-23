@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="admin panel professional admin dashboard template">
+  <title>Testimonials | admin panel</title>
+
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendors/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    <div id="sidebarSlot"></div>
+
+    <div class="admin-main">
+      <div id="navbarSlot"></div>
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-chat-quote" aria-hidden="true"></i></span>
+              <div>
+                <p class="eyebrow mb-1">Content</p>
+                <h1 class="h3 mb-1">Testimonials</h1>
+                <p class="text-muted mb-0">Manage customer reviews shown on the storefront.</p>
+              </div>
+            </div>
+          </div>
+
+          <section class="row g-3 mt-1">
+            <div class="col-12 col-xl-5">
+              <form class="panel needs-validation" novalidate id="testimonialForm">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-plus-circle" aria-hidden="true"></i><span>New Testimonial</span></h2>
+                    <p class="text-muted mb-0">Add a customer review.</p>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label" for="testimonialName">Customer Name</label>
+                    <input class="form-control" id="testimonialName" type="text" placeholder="Enter customer name..." required>
+                    <div class="invalid-feedback">Customer name is required.</div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="testimonialRating">Rating</label>
+                    <select class="form-select" id="testimonialRating">
+                      <option value="5">5 - Excellent</option>
+                      <option value="4">4 - Good</option>
+                      <option value="3">3 - Average</option>
+                      <option value="2">2 - Poor</option>
+                      <option value="1">1 - Terrible</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="testimonialText">Review Text</label>
+                    <textarea class="form-control" id="testimonialText" rows="4" placeholder="Enter the review..." required></textarea>
+                    <div class="invalid-feedback">Review text is required.</div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="testimonialImage">Photo (optional)</label>
+                    <input class="form-control" id="testimonialImage" type="file" accept="image/*">
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle" aria-hidden="true"></i> Add Testimonial</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="col-12 col-xl-7">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-list-check" aria-hidden="true"></i><span>All Testimonials</span></h2>
+                    <p class="text-muted mb-0">Every review currently published.</p>
+                  </div>
+                </div>
+                <div class="activity-list" id="testimonialsList">
+                  <p class="text-muted small mb-0">Loading testimonials...</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <div id="footerSlot"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    var fallbackImage = "../assets/images/brand/logo/logo.png";
+
+    function stars(rating) {
+      var full = Number(rating) || 0;
+      var out = "";
+      for (var i = 1; i <= 5; i++) {
+        out += i <= full ? "★" : "☆";
+      }
+      return out;
+    }
+
+    function renderTestimonials(testimonials) {
+      var list = document.getElementById("testimonialsList");
+
+      if (!testimonials.length) {
+        list.innerHTML = '<p class="text-muted small mb-0">No testimonials yet. Add one to see it here.</p>';
+        return;
+      }
+
+      list.innerHTML = "";
+      testimonials.forEach(function (item) {
+        var row = document.createElement("div");
+        row.className = "activity-item";
+        row.innerHTML =
+          '<img class="avatar-img avatar-sm" alt="">' +
+          '<div class="d-flex align-items-start justify-content-between gap-2">' +
+            '<div>' +
+              '<p class="mb-1 fw-semibold"><span class="name-text"></span> <span class="text-warning stars-text"></span></p>' +
+              '<p class="text-muted small mb-0 review-text"></p>' +
+            '</div>' +
+            '<div class="d-flex gap-1 flex-shrink-0">' +
+              '<button type="button" class="btn btn-light btn-sm edit-testimonial-btn"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
+              '<button type="button" class="btn btn-light btn-sm text-danger delete-testimonial-btn"><i class="bi bi-trash" aria-hidden="true"></i></button>' +
+            '</div>' +
+          '</div>';
+
+        row.querySelector("img").src = item.image || fallbackImage;
+        row.querySelector("img").alt = item.customerName;
+        row.querySelector(".name-text").textContent = item.customerName;
+        row.querySelector(".stars-text").textContent = stars(item.rating);
+        row.querySelector(".review-text").textContent = item.reviewText;
+        row.querySelector(".edit-testimonial-btn").addEventListener("click", function () { editTestimonial(item); });
+        row.querySelector(".delete-testimonial-btn").addEventListener("click", function () { deleteTestimonial(item._id, item.customerName); });
+
+        list.appendChild(row);
+      });
+    }
+
+    async function editTestimonial(item) {
+      var updated = await window.editDialog({
+        title: "Edit Testimonial",
+        fields: [
+          { key: "customerName", label: "Customer Name", type: "text", required: true },
+          { key: "rating", label: "Rating", type: "select", options: ["5", "4", "3", "2", "1"] },
+          { key: "reviewText", label: "Review Text", type: "textarea", required: true },
+          { key: "image", label: "Replace Photo (optional)", type: "file" }
+        ],
+        values: { customerName: item.customerName, rating: String(item.rating), reviewText: item.reviewText }
+      });
+
+      if (!updated) return;
+
+      var formData = new FormData();
+      formData.append("customerName", updated.customerName);
+      formData.append("rating", updated.rating);
+      formData.append("reviewText", updated.reviewText);
+      if (updated.image) formData.append("image", updated.image);
+
+      try {
+        var response = await window.authorizedFetch("/api/testimonials/" + item._id, { method: "PUT", body: formData });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Testimonial updated.", "success");
+          loadTestimonials();
+        } else {
+          window.showToast(result.message || "Failed to update testimonial.", "error");
+        }
+      } catch (error) {
+        console.error("Update testimonial failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteTestimonial(id, name) {
+      var confirmed = await window.confirmDialog('Delete testimonial from "' + name + '"? This cannot be undone.', { title: "Delete Testimonial" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/testimonials/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Testimonial deleted.", "success");
+          loadTestimonials();
+        } else {
+          window.showToast(result.message || "Failed to delete testimonial.", "error");
+        }
+      } catch (error) {
+        console.error("Delete testimonial failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadTestimonials() {
+      var response = await window.authorizedFetch("/api/testimonials");
+      if (!response) return;
+      var result = await response.json();
+      if (result.success) renderTestimonials(result.data);
+    }
+
+    var form = document.getElementById("testimonialForm");
+    if (form) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        var formData = new FormData();
+        formData.append("customerName", document.getElementById("testimonialName").value.trim());
+        formData.append("rating", document.getElementById("testimonialRating").value);
+        formData.append("reviewText", document.getElementById("testimonialText").value.trim());
+
+        var imageFile = document.getElementById("testimonialImage").files[0];
+        if (imageFile) formData.append("image", imageFile);
+
+        try {
+          var response = await window.authorizedFetch("/api/testimonials", { method: "POST", body: formData });
+          if (!response) return;
+
+          var result = await response.json();
+
+          if (result.success) {
+            window.showToast(result.message || "Testimonial created.", "success");
+            form.reset();
+            form.classList.remove("was-validated");
+            loadTestimonials();
+          } else {
+            window.showToast(result.message || "Failed to create testimonial.", "error");
+          }
+        } catch (error) {
+          console.error("Create testimonial failed:", error);
+          window.showToast("Something went wrong. Please try again.", "error");
+        }
+      });
+    }
+
+    loadTestimonials();
+  })();
+  </script>
+</body>
+</html>

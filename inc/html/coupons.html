@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="admin panel professional admin dashboard template">
+  <title>Coupons | admin panel</title>
+
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendors/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    <div id="sidebarSlot"></div>
+
+    <div class="admin-main">
+      <div id="navbarSlot"></div>
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
+              <div>
+                <p class="eyebrow mb-1">Marketing</p>
+                <h1 class="h3 mb-1">Coupons</h1>
+                <p class="text-muted mb-0">Create and manage discount codes.</p>
+              </div>
+            </div>
+          </div>
+
+          <section class="row g-3 mt-1">
+            <div class="col-12 col-xl-5">
+              <form class="panel needs-validation" novalidate id="couponForm">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-plus-circle" aria-hidden="true"></i><span>New Coupon</span></h2>
+                    <p class="text-muted mb-0">Create a discount code.</p>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label" for="couponCode">Coupon Code</label>
+                    <input class="form-control text-uppercase" id="couponCode" type="text" placeholder="e.g. SAVE20" required>
+                    <div class="invalid-feedback">Coupon code is required.</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="couponDiscount">Discount (%)</label>
+                    <input class="form-control" id="couponDiscount" type="number" min="1" max="100" placeholder="10" required>
+                    <div class="invalid-feedback">Discount is required.</div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label" for="couponExpiry">Expiry Date</label>
+                    <input class="form-control" id="couponExpiry" type="date">
+                  </div>
+                  <div class="col-12">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="couponActive" checked>
+                      <label class="form-check-label" for="couponActive">Active</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle" aria-hidden="true"></i> Create Coupon</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="col-12 col-xl-7">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-list-check" aria-hidden="true"></i><span>All Coupons</span></h2>
+                    <p class="text-muted mb-0">Every discount code in the system.</p>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table align-middle mb-0">
+                    <thead><tr><th scope="col">Code</th><th scope="col">Discount</th><th scope="col">Expiry</th><th scope="col">Status</th><th scope="col" class="text-end">Action</th></tr></thead>
+                    <tbody id="couponsTableBody">
+                      <tr><td colspan="5" class="text-muted small">Loading coupons...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <div id="footerSlot"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    function formatDate(value) {
+      if (!value) return "No expiry";
+      var d = new Date(value);
+      if (isNaN(d.getTime())) return "No expiry";
+      return d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+    }
+
+    function isExpired(coupon) {
+      if (!coupon.expiryDate) return false;
+      return new Date(coupon.expiryDate) < new Date(new Date().toDateString());
+    }
+
+    function renderCoupons(coupons) {
+      var body = document.getElementById("couponsTableBody");
+
+      if (!coupons.length) {
+        body.innerHTML = '<tr><td colspan="5" class="text-muted small">No coupons yet. Create one to see it here.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = "";
+      coupons.forEach(function (coupon) {
+        var expired = isExpired(coupon);
+        var statusText = expired ? "Expired" : (coupon.active ? "Active" : "Inactive");
+        var statusVariant = expired ? "secondary" : (coupon.active ? "success" : "warning");
+
+        var row = document.createElement("tr");
+        row.innerHTML =
+          '<td class="fw-semibold code-cell"></td>' +
+          '<td class="discount-cell"></td>' +
+          '<td class="expiry-cell"></td>' +
+          '<td><span class="badge text-bg-' + statusVariant + '"></span></td>' +
+          '<td class="text-end"><div class="d-flex gap-2 justify-content-end">' +
+            '<button type="button" class="btn btn-light btn-sm edit-coupon-btn"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
+            '<button type="button" class="btn btn-light btn-sm text-danger delete-coupon-btn"><i class="bi bi-trash" aria-hidden="true"></i></button>' +
+          '</div></td>';
+
+        row.querySelector(".code-cell").textContent = coupon.code;
+        row.querySelector(".discount-cell").textContent = coupon.discountPercent + "%";
+        row.querySelector(".expiry-cell").textContent = formatDate(coupon.expiryDate);
+        row.querySelector(".badge").textContent = statusText;
+        row.querySelector(".edit-coupon-btn").addEventListener("click", function () { editCoupon(coupon); });
+        row.querySelector(".delete-coupon-btn").addEventListener("click", function () { deleteCoupon(coupon._id, coupon.code); });
+
+        body.appendChild(row);
+      });
+    }
+
+    async function editCoupon(coupon) {
+      var updated = await window.editDialog({
+        title: "Edit Coupon",
+        fields: [
+          { key: "code", label: "Coupon Code", type: "text", required: true },
+          { key: "discountPercent", label: "Discount (%)", type: "number", required: true },
+          { key: "expiryDate", label: "Expiry Date", type: "date" }
+        ],
+        values: { code: coupon.code, discountPercent: coupon.discountPercent, expiryDate: coupon.expiryDate ? coupon.expiryDate.substring(0, 10) : "" }
+      });
+
+      if (!updated) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/coupons/" + coupon._id, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: updated.code, discountPercent: updated.discountPercent, expiryDate: updated.expiryDate, active: coupon.active })
+        });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Coupon updated.", "success");
+          loadCoupons();
+        } else {
+          window.showToast(result.message || "Failed to update coupon.", "error");
+        }
+      } catch (error) {
+        console.error("Update coupon failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteCoupon(id, code) {
+      var confirmed = await window.confirmDialog('Delete coupon "' + code + '"? This cannot be undone.', { title: "Delete Coupon" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/coupons/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Coupon deleted.", "success");
+          loadCoupons();
+        } else {
+          window.showToast(result.message || "Failed to delete coupon.", "error");
+        }
+      } catch (error) {
+        console.error("Delete coupon failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadCoupons() {
+      var response = await window.authorizedFetch("/api/coupons");
+      if (!response) return;
+      var result = await response.json();
+      if (result.success) renderCoupons(result.data);
+    }
+
+    var form = document.getElementById("couponForm");
+    if (form) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        var payload = {
+          code: document.getElementById("couponCode").value.trim(),
+          discountPercent: document.getElementById("couponDiscount").value,
+          expiryDate: document.getElementById("couponExpiry").value || null,
+          active: document.getElementById("couponActive").checked
+        };
+
+        try {
+          var response = await window.authorizedFetch("/api/coupons", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          if (!response) return;
+
+          var result = await response.json();
+
+          if (result.success) {
+            window.showToast(result.message || "Coupon created.", "success");
+            form.reset();
+            document.getElementById("couponActive").checked = true;
+            form.classList.remove("was-validated");
+            loadCoupons();
+          } else {
+            window.showToast(result.message || "Failed to create coupon.", "error");
+          }
+        } catch (error) {
+          console.error("Create coupon failed:", error);
+          window.showToast("Something went wrong. Please try again.", "error");
+        }
+      });
+    }
+
+    loadCoupons();
+  })();
+  </script>
+</body>
+</html>

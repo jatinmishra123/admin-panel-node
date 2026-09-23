@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="admin panel professional admin dashboard template">
+  <title>Banners | admin panel</title>
+
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendors/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <div class="sidebar-backdrop" data-sidebar-close></div>
+
+    <div id="sidebarSlot"></div>
+
+    <div class="admin-main">
+      <div id="navbarSlot"></div>
+
+      <main class="dashboard-content">
+        <div class="container-fluid px-3 px-lg-4 py-4">
+          <div class="page-heading">
+            <div class="page-heading-copy">
+              <span class="page-icon"><i class="bi bi-image" aria-hidden="true"></i></span>
+              <div>
+                <p class="eyebrow mb-1">Marketing</p>
+                <h1 class="h3 mb-1">Banners</h1>
+                <p class="text-muted mb-0">Manage homepage banners and slider images.</p>
+              </div>
+            </div>
+          </div>
+
+          <section class="row g-3 mt-1">
+            <div class="col-12 col-xl-5">
+              <form class="panel needs-validation" novalidate id="bannerForm">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-plus-circle" aria-hidden="true"></i><span>New Banner</span></h2>
+                    <p class="text-muted mb-0">Upload a banner image.</p>
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label" for="bannerTitle">Title</label>
+                    <input class="form-control" id="bannerTitle" type="text" placeholder="Enter banner title..." required>
+                    <div class="invalid-feedback">Title is required.</div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="bannerLink">Link URL</label>
+                    <input class="form-control" id="bannerLink" type="text" placeholder="e.g. /product">
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label" for="bannerImage">Banner Image</label>
+                    <input class="form-control" id="bannerImage" type="file" accept="image/*">
+                  </div>
+                </div>
+                <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                  <button class="btn btn-primary" type="submit"><i class="bi bi-plus-circle" aria-hidden="true"></i> Add Banner</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="col-12 col-xl-7">
+              <div class="panel h-100">
+                <div class="panel-header">
+                  <div>
+                    <h2 class="h5 mb-1 section-title"><i class="bi bi-list-check" aria-hidden="true"></i><span>All Banners</span></h2>
+                    <p class="text-muted mb-0">Every banner currently added.</p>
+                  </div>
+                </div>
+                <div class="row g-3" id="bannersGrid">
+                  <p class="text-muted small mb-0 px-3">Loading banners...</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <div id="footerSlot"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script>
+  (function () {
+    var fallbackImage = "../assets/images/brand/logo/logo.png";
+
+    function renderBanners(banners) {
+      var grid = document.getElementById("bannersGrid");
+
+      if (!banners.length) {
+        grid.innerHTML = '<p class="text-muted small mb-0 px-3">No banners yet. Add one to see it here.</p>';
+        return;
+      }
+
+      grid.innerHTML = "";
+      banners.forEach(function (banner) {
+        var col = document.createElement("div");
+        col.className = "col-12 col-sm-6";
+        col.innerHTML =
+          '<div class="panel p-2 h-100">' +
+            '<img class="w-100 rounded mb-2" style="height:110px;object-fit:cover;" alt="">' +
+            '<p class="fw-semibold mb-0 title-text"></p>' +
+            '<p class="text-muted small mb-2 link-text"></p>' +
+            '<div class="d-flex gap-2">' +
+              '<button type="button" class="btn btn-light btn-sm edit-banner-btn"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
+              '<button type="button" class="btn btn-light btn-sm text-danger delete-banner-btn"><i class="bi bi-trash" aria-hidden="true"></i></button>' +
+            '</div>' +
+          '</div>';
+
+        col.querySelector("img").src = banner.image || fallbackImage;
+        col.querySelector("img").alt = banner.title;
+        col.querySelector(".title-text").textContent = banner.title;
+        col.querySelector(".link-text").textContent = banner.link || "No link set";
+        col.querySelector(".edit-banner-btn").addEventListener("click", function () { editBanner(banner); });
+        col.querySelector(".delete-banner-btn").addEventListener("click", function () { deleteBanner(banner._id, banner.title); });
+
+        grid.appendChild(col);
+      });
+    }
+
+    async function editBanner(banner) {
+      var updated = await window.editDialog({
+        title: "Edit Banner",
+        fields: [
+          { key: "title", label: "Title", type: "text", required: true },
+          { key: "link", label: "Link URL", type: "text" },
+          { key: "image", label: "Replace Image (optional)", type: "file" }
+        ],
+        values: { title: banner.title, link: banner.link }
+      });
+
+      if (!updated) return;
+
+      var formData = new FormData();
+      formData.append("title", updated.title);
+      formData.append("link", updated.link);
+      if (updated.image) formData.append("image", updated.image);
+
+      try {
+        var response = await window.authorizedFetch("/api/banners/" + banner._id, { method: "PUT", body: formData });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Banner updated.", "success");
+          loadBanners();
+        } else {
+          window.showToast(result.message || "Failed to update banner.", "error");
+        }
+      } catch (error) {
+        console.error("Update banner failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function deleteBanner(id, title) {
+      var confirmed = await window.confirmDialog('Delete banner "' + title + '"? This cannot be undone.', { title: "Delete Banner" });
+      if (!confirmed) return;
+
+      try {
+        var response = await window.authorizedFetch("/api/banners/" + id, { method: "DELETE" });
+        if (!response) return;
+        var result = await response.json();
+
+        if (result.success) {
+          window.showToast(result.message || "Banner deleted.", "success");
+          loadBanners();
+        } else {
+          window.showToast(result.message || "Failed to delete banner.", "error");
+        }
+      } catch (error) {
+        console.error("Delete banner failed:", error);
+        window.showToast("Something went wrong. Please try again.", "error");
+      }
+    }
+
+    async function loadBanners() {
+      var response = await window.authorizedFetch("/api/banners");
+      if (!response) return;
+      var result = await response.json();
+      if (result.success) renderBanners(result.data);
+    }
+
+    var form = document.getElementById("bannerForm");
+    if (form) {
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          return;
+        }
+
+        var formData = new FormData();
+        formData.append("title", document.getElementById("bannerTitle").value.trim());
+        formData.append("link", document.getElementById("bannerLink").value.trim());
+
+        var imageFile = document.getElementById("bannerImage").files[0];
+        if (imageFile) formData.append("image", imageFile);
+
+        try {
+          var response = await window.authorizedFetch("/api/banners", { method: "POST", body: formData });
+          if (!response) return;
+
+          var result = await response.json();
+
+          if (result.success) {
+            window.showToast(result.message || "Banner created.", "success");
+            form.reset();
+            form.classList.remove("was-validated");
+            loadBanners();
+          } else {
+            window.showToast(result.message || "Failed to create banner.", "error");
+          }
+        } catch (error) {
+          console.error("Create banner failed:", error);
+          window.showToast("Something went wrong. Please try again.", "error");
+        }
+      });
+    }
+
+    loadBanners();
+  })();
+  </script>
+</body>
+</html>
