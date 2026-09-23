@@ -16,6 +16,9 @@ const app = express();
 // ================= CONFIG =================
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "your_super_secure_secret_key_change_this";
+// Separate secret for storefront customer accounts, so a customer token can never be used
+// to authenticate against admin-only routes (and vice versa), even by accident.
+const CUSTOMER_JWT_SECRET = process.env.CUSTOMER_JWT_SECRET || "your_super_secure_customer_secret_key_change_this";
 
 // ================= IMAGE UPLOAD (CATEGORY / SUBCATEGORY / PRODUCT / BANNERS / TESTIMONIALS) =================
 // Uses Cloudinary when CLOUDINARY_* env vars are set (persists across redeploys).
@@ -110,6 +113,28 @@ function verifyToken(req, res, next) {
             success: false,
             message: "Invalid or expired token."
         });
+    }
+}
+
+// ================= CUSTOMER JWT VERIFY MIDDLEWARE (storefront accounts) =================
+function verifyCustomerToken(req, res, next) {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            return res.status(401).json({ success: false, message: "Access denied. No token provided." });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        if (!token) {
+            return res.status(401).json({ success: false, message: "Invalid token format." });
+        }
+
+        req.customer = jwt.verify(token, CUSTOMER_JWT_SECRET);
+        next();
+    } catch (error) {
+        return res.status(403).json({ success: false, message: "Invalid or expired token." });
     }
 }
 
@@ -299,6 +324,156 @@ app.post("/login", async (req, res) => {
             message: "Login failed.",
             error: error.message
         });
+    }
+});
+
+// ================= CUSTOMER ACCOUNTS (storefront login, separate from admin accounts) =================
+
+// CUSTOMER REGISTER
+app.post("/api/customer/register", async (req, res) => {
+    const db = getDB();
+    try {
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ success: false, message: "All fields are required." });
+        }
+
+        const existing = await db.collection("customers").findOne({ email });
+        if (existing) {
+            return res.status(409).json({ success: false, message: "Email already registered." });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const result = await db.collection("customers").insertOne({
+            name, email, password: hashedPassword,
+            mobile: "", gender: "",
+            createdAt: new Date()
+        });
+
+        return res.status(201).json({ success: true, message: "Registration successful.", customerId: result.insertedId });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Registration failed.", error: error.message });
+    }
+});
+
+// CUSTOMER LOGIN
+app.post("/api/customer/login", async (req, res) => {
+    const db = getDB();
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "Email and password are required." });
+        }
+
+        const customer = await db.collection("customers").findOne({ email });
+        if (!customer) {
+            return res.status(401).json({ success: false, message: "Invalid email." });
+        }
+
+        const isValid = await bcrypt.compare(password, customer.password);
+        if (!isValid) {
+            return res.status(401).json({ success: false, message: "Invalid password." });
+        }
+
+        const token = jwt.sign(
+            { customerId: customer._id, email: customer.email, name: customer.name },
+            CUSTOMER_JWT_SECRET,
+            { expiresIn: "7d" }
+        );
+
+        return res.status(200).json({ success: true, message: "Login successful.", token });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Login failed.", error: error.message });
+    }
+});
+
+// GET OWN CUSTOMER PROFILE
+app.get("/api/customer/profile", verifyCustomerToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const customer = await db.collection("customers").findOne(
+            { _id: new ObjectId(req.customer.customerId) },
+            { projection: { password: 0 } }
+        );
+
+        if (!customer) {
+            return res.status(404).json({ success: false, message: "Customer not found." });
+        }
+
+        return res.status(200).json({ success: true, data: customer });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch profile.", error: error.message });
+    }
+});
+
+// UPDATE OWN CUSTOMER PROFILE
+app.put("/api/customer/profile", verifyCustomerToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const { name, mobile, gender } = req.body;
+
+        if (!name) {
+            return res.status(400).json({ success: false, message: "Name is required." });
+        }
+
+        await db.collection("customers").updateOne(
+            { _id: new ObjectId(req.customer.customerId) },
+            { $set: { name, mobile: mobile || "", gender: gender || "" } }
+        );
+
+        return res.status(200).json({ success: true, message: "Profile updated." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to update profile.", error: error.message });
+    }
+});
+
+// CHANGE OWN CUSTOMER PASSWORD
+app.put("/api/customer/password", verifyCustomerToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ success: false, message: "Current and new password are required." });
+        }
+
+        const customer = await db.collection("customers").findOne({ _id: new ObjectId(req.customer.customerId) });
+        if (!customer) {
+            return res.status(404).json({ success: false, message: "Customer not found." });
+        }
+
+        const isValid = await bcrypt.compare(currentPassword, customer.password);
+        if (!isValid) {
+            return res.status(401).json({ success: false, message: "Current password is incorrect." });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await db.collection("customers").updateOne(
+            { _id: new ObjectId(req.customer.customerId) },
+            { $set: { password: hashedPassword } }
+        );
+
+        return res.status(200).json({ success: true, message: "Password updated." });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to update password.", error: error.message });
+    }
+});
+
+// GET OWN ORDERS (matched by the customer's email)
+app.get("/api/customer/orders", verifyCustomerToken, async (req, res) => {
+    const db = getDB();
+    try {
+        const orders = await db.collection("orders")
+            .find({ customerEmail: req.customer.email })
+            .sort({ createdAt: -1 })
+            .toArray();
+
+        return res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Failed to fetch orders.", error: error.message });
     }
 });
 
